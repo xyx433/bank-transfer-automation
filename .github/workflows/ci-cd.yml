@@ -75,6 +75,10 @@ jobs:
           pip install -r requirements.txt
           pip install pymysql requests pytest
 
+      - name: Initialize Test Database
+        run: |
+          mysql -h127.0.0.1 -uroot -p${{ secrets.DB_PASSWORD }} ${{ secrets.DB_NAME }} < sql/reset_test_accounts.sql
+
       - name: Run Tests
         run: pytest testcases/ -v
 
