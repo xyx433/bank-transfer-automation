@@ -31,17 +31,22 @@ jobs:
           path: java-backend
           token: ${{ secrets.JAVA_REPO_TOKEN }}
 
+      # 4. 构建并运行 Java 后端 Docker 容器 (终极修复版)
       - name: Build and Run Backend
         run: |
+          # 1. 构建镜像
           docker build -t bank-backend ./java-backend
-          
-          # 【终极修复】使用引号包裹整个命令，强制作为一行执行
-          # 避免任何换行符或空格解析错误
-          "docker" "run" "-d" "--name" "my-bank-app" "--network" "host" \
-            "-e" "SPRING_DATASOURCE_URL=jdbc:mysql://localhost:3306/${{ secrets.DB_NAME }}?useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=UTF-8" \
-            "-e" "SPRING_DATASOURCE_USERNAME=root" \
-            "-e" "SPRING_DATASOURCE_PASSWORD=${{ secrets.DB_PASSWORD }}" \
-            "bank-backend"
+
+          # 2. 运行容器 (使用 sh -c 包裹，确保命令被当作一行执行)
+          sh -c '
+          docker run -d \
+            --name my-bank-app \
+            --network host \
+            -e "SPRING_DATASOURCE_URL=jdbc:mysql://localhost:3306/${{ secrets.DB_NAME }}?useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=UTF-8" \
+            -e "SPRING_DATASOURCE_USERNAME=root" \
+            -e "SPRING_DATASOURCE_PASSWORD=${{ secrets.DB_PASSWORD }}" \
+            bank-backend
+          '
 
       - name: Wait for Backend to Start
         run: |
