@@ -22,11 +22,11 @@ jobs:
           --health-retries=5
 
     steps:
-      # 2. 【关键】先拉取 Python 测试代码 (当前仓库)
+      # 2. 拉取 Python 测试代码 (当前仓库)
       - name: Checkout Python Test Code
         uses: actions/checkout@v3
 
-      # 3. 【关键】再去拉取 Java 后端代码 (跨仓库拉取)
+      # 3. 拉取 Java 后端代码 (跨仓库)
       - name: Checkout Java Backend Code
         uses: actions/checkout@v3
         with:
@@ -37,25 +37,32 @@ jobs:
       # 4. 构建并运行 Java 后端 Docker 容器
       - name: Build and Run Backend
         run: |
-          # 进入 java-backend 目录构建镜像
+          # 构建镜像
           docker build -t bank-backend ./java-backend
-
-          # 运行容器 (注意：这里将所有参数写在了一行，避免换行符导致的语法错误)
-          # 关键点：数据库地址必须使用 'mysql' (即上面 services 定义的名称)，端口保持 3306
+          
+          # 运行容器 (关键：所有参数写在一行，使用 host 网络模式)
           docker run -d \
             --name my-bank-app \
             --network host \
-            -e SPRING_DATASOURCE_URL=jdbc:mysql://localhost:3306/${{ secrets.DB_NAME }}?useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=UTF-8&allowPublicKeyRetrieval=true \
+            -e SPRING_DATASOURCE_URL=jdbc:mysql://localhost:3306/${{ secrets.DB_NAME }}?useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=UTF-8 \
             -e SPRING_DATASOURCE_USERNAME=root \
             -e SPRING_DATASOURCE_PASSWORD=${{ secrets.DB_PASSWORD }} \
             bank-backend
 
-      # 5. 等待后端启动 (增加了重试机制，防止应用还没起好就开始测试)
+      # 5. 等待后端启动 (更稳健的等待方式)
       - name: Wait for Backend to Start
         run: |
-          echo "Waiting for server to be ready..."
-          timeout 120 bash -c 'until curl -s http://localhost:8080/api/v1/transfer > /dev/null; do sleep 5; done' || (echo "Server failed to start within 120s" && exit 1)
-          echo "Server is UP!"
+          echo "Waiting for server on port 8080..."
+          # 循环检查端口是否开放，最多等待 120 秒
+          for i in $(seq 1 120); do
+            nc -z localhost 8080 && echo "Server is UP!" && exit 0
+            echo "Waiting... $i/120"
+            sleep 5
+          done
+          echo "Server failed to start within 120s" && exit 1
+        env:
+          # 让 nc (netcat) 命令可用，用于检查端口
+          DEBIAN_FRONTEND: noninteractive
 
       # 6. 设置 Python 环境
       - name: Set up Python
@@ -76,4 +83,5 @@ jobs:
       # 9. 清理
       - name: Cleanup
         if: always()
-        run: docker rm -f my-bank-app
+        run: |
+          docker rm -f my-bank-app || true
