@@ -46,10 +46,11 @@ ON DUPLICATE KEY UPDATE
     balance = 50000.00,
     account_status = 'SLEEP';
 
--- 6. 黑名单收款账户
+-- 6. 黑名单收款账户 
+-- 修改点：将 account_status 改为风控拦截对应的状态
 INSERT INTO account (acct_no, acct_name, id_type, id_no, bank_code, bank_name, balance, account_status, star_level, daily_limit, single_limit)
-VALUES ('6228481111111111', '黑名单账户', '01', '411502199001011238', '103100000026', '中国农业银行上海分行', 10000.00, 'NORMAL', 1, 200000.00, 50000.00)
+VALUES ('6228481111111111', '黑名单账户', '01', '411502199001011238', '103100000026', '中国农业银行上海分行', 10000.00, 'RISK_BLACKLIST', 1, 200000.00, 50000.00)
 ON DUPLICATE KEY UPDATE
     acct_name = '黑名单账户',
     balance = 10000.00,
-    account_status = 'NORMAL';
+    account_status = 'RISK_BLACKLIST'; -- 确保这里和上面一致
