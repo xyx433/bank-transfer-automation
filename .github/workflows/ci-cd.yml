@@ -37,32 +37,31 @@ jobs:
       # 4. 构建并运行 Java 后端 Docker 容器
       - name: Build and Run Backend
         run: |
-          # 构建镜像
+          echo "Building backend image..."
           docker build -t bank-backend ./java-backend
-          
-          # 运行容器 (关键：所有参数写在一行，使用 host 网络模式)
-          docker run -d \
-            --name my-bank-app \
-            --network host \
-            -e SPRING_DATASOURCE_URL=jdbc:mysql://localhost:3306/${{ secrets.DB_NAME }}?useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=UTF-8 \
-            -e SPRING_DATASOURCE_USERNAME=root \
-            -e SPRING_DATASOURCE_PASSWORD=${{ secrets.DB_PASSWORD }} \
-            bank-backend
+
+          echo "Starting backend container..."
+          # 【关键修改】将所有参数写在一行，避免 \ 换行导致的解析错误
+          # 使用 --network host 确保能直接通过 localhost 访问 MySQL 服务
+          docker run -d --name my-bank-app --network host -e SPRING_DATASOURCE_URL=jdbc:mysql://localhost:3306/${{ secrets.DB_NAME }}?useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=UTF-8 -e SPRING_DATASOURCE_USERNAME=root -e SPRING_DATASOURCE_PASSWORD=${{ secrets.DB_PASSWORD }} bank-backend
 
       # 5. 等待后端启动 (更稳健的等待方式)
       - name: Wait for Backend to Start
         run: |
           echo "Waiting for server on port 8080..."
           # 循环检查端口是否开放，最多等待 120 秒
-          for i in $(seq 1 120); do
-            nc -z localhost 8080 && echo "Server is UP!" && exit 0
-            echo "Waiting... $i/120"
+          for i in $(seq 1 24); do
+            if nc -z localhost 8080; then
+              echo "Server is UP!"
+              exit 0
+            fi
+            echo "Waiting... attempt $i/24 (sleeping 5s)"
             sleep 5
           done
-          echo "Server failed to start within 120s" && exit 1
-        env:
-          # 让 nc (netcat) 命令可用，用于检查端口
-          DEBIAN_FRONTEND: noninteractive
+          echo "Server failed to start within 120s"
+          # 打印日志以便排查
+          docker logs my-bank-app
+          exit 1
 
       # 6. 设置 Python 环境
       - name: Set up Python
