@@ -4339,3 +4339,198 @@ assert False
 2026-06-13 16:10:20 | INFO     | [conftest] | environment_reset:603 | [环境清理] 完成: 0 条语句执行成功 ✓
 2026-06-13 16:10:20 | INFO     | [conftest] | environment_reset:614 | [环境自动化] 全部完成
 2026-06-13 16:10:20 | INFO     | [conftest] | session_db_conn:521 | Session 级别数据库连接已关闭
+2026-06-13 22:20:59 | INFO     | [conftest] | pytest_configure:987 | 📝 日志文件: E:\Python-Project\bank_ai_test_platform\logs\test_2026-06-13.log
+2026-06-13 22:20:59 | INFO     | [conftest] | pytest_configure:988 | 📊 日志级别: DEBUG (可设置 BANK_LOG_LEVEL 环境变量调整)
+2026-06-13 22:20:59 | INFO     | [conftest] | load_yaml_data:1078 | 成功加载 15 条 YAML 测试用例
+2026-06-13 22:20:59 | INFO     | [conftest] | collect_test_cases:1148 | [数据驱动] 从 1 个 YAML 文件加载了 15 条测试用例 (前缀: transfer)
+2026-06-13 22:20:59 | INFO     | [conftest] | create_db_connection:478 | 数据库连接成功: localhost:3306/bank_core
+2026-06-13 22:20:59 | INFO     | [conftest] | session_db_conn:598 | Session 级别数据库连接已建立（用于环境重置/清理）
+2026-06-13 22:20:59 | INFO     | [conftest] | environment_reset:656 | ========================================================
+2026-06-13 22:20:59 | INFO     | [conftest] | environment_reset:657 | 🔧 [环境重置] 开始执行测试环境自动重置...
+2026-06-13 22:20:59 | INFO     | [conftest] | environment_reset:658 | ========================================================
+2026-06-13 22:20:59 | INFO     | [conftest] | environment_reset:662 | [环境重置] 完成: 0 条语句执行成功 ✓
+2026-06-13 22:20:59 | INFO     | [conftest] | create_db_connection:478 | 数据库连接成功: localhost:3306/bank_core
+2026-06-13 22:20:59 | DEBUG    | [conftest] | db_conn:758 | 数据库连接已建立，将启用余额校验
+2026-06-13 22:20:59 | INFO     | [test_transfer] | test_transfer:265 | [TC_TRANSFER_POS_001] 开始执行: 正常转账-普通跨行转账
+2026-06-13 22:20:59 | DEBUG    | [test_transfer] | test_transfer:267 | [TC_TRANSFER_POS_001] 请求体:
+{'header': {'tranSeqNo': '20260613PITMB62434139', 'channelId': 'MB', 'tranTimestamp': '2026-06-13T22:20:59.483+08:00', 'version': '1.0.0', 'idempotencyToken': '01b1fb1a-6f93-4456-be19-fef11b7de4ad'}, 'body': {'payer': {'acctNo': '6222021234567890', 'acctName': '张三', 'idType': '01', 'idNo': '310101199001011234', 'payerBankCode': '102100099996', 'payerBankName': '中国工商银行北京分行'}, 'payee': {'acctNo': '6228480012345678', 'acctName': '李四收款', 'payeeBankCode': '103100000026', 'payeeBankName': '中国农业银行上海分行', 'payeeBankUnionCode': '103290040217'}, 'transaction': {'amount': 100.0, 'currencyCode': 'CNY', 'bizType': '1001', 'purposeCode': '01', 'remitInfo': '货款转账', 'routeMode': 'AUTO', 'feeBearer': '01'}, 'security': {'smsCode': '834291', 'tradePwdEnc': 'Sm4Encrypted&Base64==', 'deviceFingerprint': 'fp_ios_16_xr_abc123', 'faceToken': 'liveBodyToken_23984729384', 'nonce': '1781360459_1892863853028529'}, 'extendInfo': {'clientIp': '202.106.0.20', 'macAddress': 'AA:BB:CC:DD:EE:FF', 'gpsCoordinate': {'longitude': '114.0646', 'latitude': '32.1282'}, 'terminalId': 'T20230001', 'terminalType': 'iOS_16.0_iPhone14'}}, 'signature': 'Base64Encoded_RSAwithSHA256_Signature_Placeholder'}
+2026-06-13 22:20:59 | DEBUG    | [conftest] | get_account_balance:510 | 查询余额: acct_no=6222021234567890, balance=100000.0
+2026-06-13 22:20:59 | INFO     | [test_transfer] | test_transfer:279 | [TC_TRANSFER_POS_001] 转账前余额: 6222021234567890 = 100,000.00
+2026-06-13 22:20:59 | INFO     | [test_transfer] | test_transfer:297 | [TC_TRANSFER_POS_001] POST http://localhost:8080/api/v1/transfer 金额=100.0 付款方=6222021234567890 收款方=6228480012345678
+2026-06-13 22:20:59 | INFO     | [apis.bank_api] | transfer:76 | → POST http://localhost:8080/api/v1/transfer | amount=100.0 | payer=6222021234567890 | payee=6228480012345678 | timeout=30s
+2026-06-13 22:20:59 | INFO     | [apis.bank_api] | transfer:128 | ← HTTP 200 | elapsed=0.416s | code=10004 msg=账户状态异常
+2026-06-13 22:20:59 | DEBUG    | [test_transfer] | test_transfer:334 | [TC_TRANSFER_POS_001] 响应体:
+{'code': '10004', 'message': '账户状态异常', 'data': {'header': {'tranSeqNo': '20260613PITMB62434139', 'respTime': '2026-06-13T22:20:59.930258300', 'version': '1.0.0', 'respCode': '10004', 'respMsg': '账户状态异常'}, 'body': {'tranStatus': 'FAILED', 'acpTranSeqNo': None, 'coreSerialNo': None, 'hostSeqNo': None, 'hostStatus': None, 'payeeAcctMask': None, 'actualAmount': None, 'feeAmount': None, 'completedTime': None, 'failReasonCode': '10004', 'failReasonDesc': '收款账户不存在', 'retryFlag': False}}, 'success': False}
+2026-06-13 22:20:59 | ERROR    | [conftest] | pytest_runtest_makereport:924 | ✗ TEST FAILED | testcases/test_transfer.py::test_transfer[TC_TRANSFER_POS_001] | AssertionError: [TC_TRANSFER_POS_001] respCode不匹配: 期望 000000, 实际 10004, respMsg: 账户状态异常
+assert '10004' == '000000'
+  
+  [0m[91m- 000000[39;49;00m[90m[39;49;00m
+  [92m+ 10004[39;49;00m[90m[39;49;00m
+2026-06-13 22:20:59 | DEBUG    | [conftest] | pytest_runtest_makereport:929 | 完整异常栈:
+AssertionError: [TC_TRANSFER_POS_001] respCode不匹配: 期望 000000, 实际 10004, respMsg: 账户状态异常
+assert '10004' == '000000'
+  
+  [0m[91m- 000000[39;49;00m[90m[39;49;00m
+  [92m+ 10004[39;49;00m[90m[39;49;00m
+[<TracebackEntry E:\python\Lib\site-packages\_pytest\runner.py:353>, <TracebackEntry E:\python\Lib\site-packages\_pytest\runner.py:245>, <TracebackEntry E:\python\Lib\site-packages\pluggy\_hooks.py:512>, <TracebackEntry E:\python\Lib\site-packages\pluggy\_manager.py:120>, <TracebackEntry E:\python\Lib\site-packages\pluggy\_callers.py:167>, <TracebackEntry E:\python\Lib\site-packages\pluggy\_callers.py:139>, <TracebackEntry E:\python\Lib\site-packages\pytest_playwright\pytest_playwright.py:112>, <TracebackEntry E:\python\Lib\site-packages\pytest_playwright\pytest_playwright.py:107>, <TracebackEntry E:\python\Lib\site-packages\pluggy\_callers.py:139>, <TracebackEntry E:\python\Lib\site-packages\_pytest\logging.py:850>, <TracebackEntry E:\python\Lib\site-packages\pluggy\_callers.py:139>, <TracebackEntry E:\python\Lib\site-packages\_pytest\capture.py:900>, <TracebackEntry E:\python\Lib\site-packages\pluggy\_callers.py:139>, <TracebackEntry E:\python\Lib\site-packages\_pytest\skipping.py:268>, <TracebackEntry E:\python\Lib\site-packages\pluggy\_callers.py:121>, <TracebackEntry E:\python\Lib\site-packages\_pytest\runner.py:179>, <TracebackEntry E:\python\Lib\site-packages\_pytest\python.py:1720>, <TracebackEntry E:\python\Lib\site-packages\pluggy\_hooks.py:512>, <TracebackEntry E:\python\Lib\site-packages\pluggy\_manager.py:120>, <TracebackEntry E:\python\Lib\site-packages\pluggy\_callers.py:167>, <TracebackEntry E:\python\Lib\site-packages\pluggy\_callers.py:121>, <TracebackEntry E:\python\Lib\site-packages\_pytest\python.py:166>, <TracebackEntry E:\Python-Project\bank_ai_test_platform\testcases\test_transfer.py:363>]
+2026-06-13 22:21:00 | DEBUG    | [conftest] | db_conn:771 | 数据库连接已关闭
+2026-06-13 22:21:00 | INFO     | [conftest] | create_db_connection:478 | 数据库连接成功: localhost:3306/bank_core
+2026-06-13 22:21:00 | DEBUG    | [conftest] | db_conn:758 | 数据库连接已建立，将启用余额校验
+2026-06-13 22:21:00 | INFO     | [test_transfer] | test_transfer:265 | [TC_TRANSFER_POS_FEE_002] 开始执行: 正向转账-跨行手续费扣除验证
+2026-06-13 22:21:00 | DEBUG    | [test_transfer] | test_transfer:267 | [TC_TRANSFER_POS_FEE_002] 请求体:
+{'header': {'tranSeqNo': '20260613PITMB47873549', 'channelId': 'MB', 'tranTimestamp': '2026-06-13T22:21:00.079+08:00', 'version': '1.0.0', 'idempotencyToken': '8f10a2e8-02ca-43f6-8900-144ccb0b5846'}, 'body': {'payer': {'acctNo': '6222021234567890', 'acctName': '张三', 'idType': '01', 'idNo': '310101199001011234', 'payerBankCode': '102100099996', 'payerBankName': '中国工商银行北京分行'}, 'payee': {'acctNo': '6228480012345678', 'acctName': '李四收款', 'payeeBankCode': '103100000026', 'payeeBankName': '中国农业银行上海分行', 'payeeBankUnionCode': '103290040217'}, 'transaction': {'amount': 100.0, 'currencyCode': 'CNY', 'bizType': '1001', 'purposeCode': '01', 'remitInfo': '货款转账', 'routeMode': 'AUTO', 'feeBearer': '01'}, 'security': {'smsCode': '834291', 'tradePwdEnc': 'Sm4Encrypted&Base64==', 'deviceFingerprint': 'fp_ios_16_xr_abc123', 'faceToken': 'liveBodyToken_23984729384', 'nonce': '1781360460_2328246311165388'}, 'extendInfo': {'clientIp': '202.106.0.20', 'macAddress': 'AA:BB:CC:DD:EE:FF', 'gpsCoordinate': {'longitude': '114.0646', 'latitude': '32.1282'}, 'terminalId': 'T20230001', 'terminalType': 'iOS_16.0_iPhone14'}}, 'signature': 'Base64Encoded_RSAwithSHA256_Signature_Placeholder'}
+2026-06-13 22:21:00 | DEBUG    | [conftest] | get_account_balance:510 | 查询余额: acct_no=6222021234567890, balance=100000.0
+2026-06-13 22:21:00 | INFO     | [test_transfer] | test_transfer:279 | [TC_TRANSFER_POS_FEE_002] 转账前余额: 6222021234567890 = 100,000.00
+2026-06-13 22:21:00 | INFO     | [test_transfer] | test_transfer:297 | [TC_TRANSFER_POS_FEE_002] POST http://localhost:8080/api/v1/transfer 金额=100.0 付款方=6222021234567890 收款方=6228480012345678
+2026-06-13 22:21:00 | INFO     | [apis.bank_api] | transfer:76 | → POST http://localhost:8080/api/v1/transfer | amount=100.0 | payer=6222021234567890 | payee=6228480012345678 | timeout=30s
+2026-06-13 22:21:00 | INFO     | [apis.bank_api] | transfer:128 | ← HTTP 200 | elapsed=0.013s | code=10004 msg=账户状态异常
+2026-06-13 22:21:00 | DEBUG    | [test_transfer] | test_transfer:334 | [TC_TRANSFER_POS_FEE_002] 响应体:
+{'code': '10004', 'message': '账户状态异常', 'data': {'header': {'tranSeqNo': '20260613PITMB47873549', 'respTime': '2026-06-13T22:21:00.092099500', 'version': '1.0.0', 'respCode': '10004', 'respMsg': '账户状态异常'}, 'body': {'tranStatus': 'FAILED', 'acpTranSeqNo': None, 'coreSerialNo': None, 'hostSeqNo': None, 'hostStatus': None, 'payeeAcctMask': None, 'actualAmount': None, 'feeAmount': None, 'completedTime': None, 'failReasonCode': '10004', 'failReasonDesc': '收款账户不存在', 'retryFlag': False}}, 'success': False}
+2026-06-13 22:21:00 | ERROR    | [conftest] | pytest_runtest_makereport:924 | ✗ TEST FAILED | testcases/test_transfer.py::test_transfer[TC_TRANSFER_POS_FEE_002] | AssertionError: [TC_TRANSFER_POS_FEE_002] respCode不匹配: 期望 000000, 实际 10004, respMsg: 账户状态异常
+assert '10004' == '000000'
+  
+  [0m[91m- 000000[39;49;00m[90m[39;49;00m
+  [92m+ 10004[39;49;00m[90m[39;49;00m
+2026-06-13 22:21:00 | DEBUG    | [conftest] | pytest_runtest_makereport:929 | 完整异常栈:
+AssertionError: [TC_TRANSFER_POS_FEE_002] respCode不匹配: 期望 000000, 实际 10004, respMsg: 账户状态异常
+assert '10004' == '000000'
+  
+  [0m[91m- 000000[39;49;00m[90m[39;49;00m
+  [92m+ 10004[39;49;00m[90m[39;49;00m
+[<TracebackEntry E:\python\Lib\site-packages\_pytest\runner.py:353>, <TracebackEntry E:\python\Lib\site-packages\_pytest\runner.py:245>, <TracebackEntry E:\python\Lib\site-packages\pluggy\_hooks.py:512>, <TracebackEntry E:\python\Lib\site-packages\pluggy\_manager.py:120>, <TracebackEntry E:\python\Lib\site-packages\pluggy\_callers.py:167>, <TracebackEntry E:\python\Lib\site-packages\pluggy\_callers.py:139>, <TracebackEntry E:\python\Lib\site-packages\pytest_playwright\pytest_playwright.py:112>, <TracebackEntry E:\python\Lib\site-packages\pytest_playwright\pytest_playwright.py:107>, <TracebackEntry E:\python\Lib\site-packages\pluggy\_callers.py:139>, <TracebackEntry E:\python\Lib\site-packages\_pytest\logging.py:850>, <TracebackEntry E:\python\Lib\site-packages\pluggy\_callers.py:139>, <TracebackEntry E:\python\Lib\site-packages\_pytest\capture.py:900>, <TracebackEntry E:\python\Lib\site-packages\pluggy\_callers.py:139>, <TracebackEntry E:\python\Lib\site-packages\_pytest\skipping.py:268>, <TracebackEntry E:\python\Lib\site-packages\pluggy\_callers.py:121>, <TracebackEntry E:\python\Lib\site-packages\_pytest\runner.py:179>, <TracebackEntry E:\python\Lib\site-packages\_pytest\python.py:1720>, <TracebackEntry E:\python\Lib\site-packages\pluggy\_hooks.py:512>, <TracebackEntry E:\python\Lib\site-packages\pluggy\_manager.py:120>, <TracebackEntry E:\python\Lib\site-packages\pluggy\_callers.py:167>, <TracebackEntry E:\python\Lib\site-packages\pluggy\_callers.py:121>, <TracebackEntry E:\python\Lib\site-packages\_pytest\python.py:166>, <TracebackEntry E:\Python-Project\bank_ai_test_platform\testcases\test_transfer.py:363>]
+2026-06-13 22:21:00 | DEBUG    | [conftest] | db_conn:771 | 数据库连接已关闭
+2026-06-13 22:21:00 | INFO     | [conftest] | create_db_connection:478 | 数据库连接成功: localhost:3306/bank_core
+2026-06-13 22:21:00 | DEBUG    | [conftest] | db_conn:758 | 数据库连接已建立，将启用余额校验
+2026-06-13 22:21:00 | INFO     | [test_transfer] | test_transfer:265 | [TC_TRANSFER_POS_BOUNDARY_003] 开始执行: 边界值测试-最小转账金额0.01元
+2026-06-13 22:21:00 | DEBUG    | [test_transfer] | test_transfer:267 | [TC_TRANSFER_POS_BOUNDARY_003] 请求体:
+{'header': {'tranSeqNo': '20260613PITMB10916839', 'channelId': 'MB', 'tranTimestamp': '2026-06-13T22:21:00.158+08:00', 'version': '1.0.0', 'idempotencyToken': 'a25c9e49-d46b-4345-b5d5-43007424940d'}, 'body': {'payer': {'acctNo': '6222021234567890', 'acctName': '张三', 'idType': '01', 'idNo': '310101199001011234', 'payerBankCode': '102100099996', 'payerBankName': '中国工商银行北京分行'}, 'payee': {'acctNo': '6228480012345678', 'acctName': '李四收款', 'payeeBankCode': '103100000026', 'payeeBankName': '中国农业银行上海分行', 'payeeBankUnionCode': '103290040217'}, 'transaction': {'amount': 0.01, 'currencyCode': 'CNY', 'bizType': '1001', 'purposeCode': '01', 'remitInfo': '货款转账', 'routeMode': 'AUTO', 'feeBearer': '01'}, 'security': {'smsCode': '834291', 'tradePwdEnc': 'Sm4Encrypted&Base64==', 'deviceFingerprint': 'fp_ios_16_xr_abc123', 'faceToken': 'liveBodyToken_23984729384', 'nonce': '1781360460_2308687483330078'}, 'extendInfo': {'clientIp': '202.106.0.20', 'macAddress': 'AA:BB:CC:DD:EE:FF', 'gpsCoordinate': {'longitude': '114.0646', 'latitude': '32.1282'}, 'terminalId': 'T20230001', 'terminalType': 'iOS_16.0_iPhone14'}}, 'signature': 'Base64Encoded_RSAwithSHA256_Signature_Placeholder'}
+2026-06-13 22:21:00 | DEBUG    | [conftest] | get_account_balance:510 | 查询余额: acct_no=6222021234567890, balance=100000.0
+2026-06-13 22:21:00 | INFO     | [test_transfer] | test_transfer:279 | [TC_TRANSFER_POS_BOUNDARY_003] 转账前余额: 6222021234567890 = 100,000.00
+2026-06-13 22:21:00 | INFO     | [test_transfer] | test_transfer:297 | [TC_TRANSFER_POS_BOUNDARY_003] POST http://localhost:8080/api/v1/transfer 金额=0.01 付款方=6222021234567890 收款方=6228480012345678
+2026-06-13 22:21:00 | INFO     | [apis.bank_api] | transfer:76 | → POST http://localhost:8080/api/v1/transfer | amount=0.01 | payer=6222021234567890 | payee=6228480012345678 | timeout=30s
+2026-06-13 22:21:00 | INFO     | [apis.bank_api] | transfer:128 | ← HTTP 200 | elapsed=0.014s | code=10004 msg=账户状态异常
+2026-06-13 22:21:00 | DEBUG    | [test_transfer] | test_transfer:334 | [TC_TRANSFER_POS_BOUNDARY_003] 响应体:
+{'code': '10004', 'message': '账户状态异常', 'data': {'header': {'tranSeqNo': '20260613PITMB10916839', 'respTime': '2026-06-13T22:21:00.171431600', 'version': '1.0.0', 'respCode': '10004', 'respMsg': '账户状态异常'}, 'body': {'tranStatus': 'FAILED', 'acpTranSeqNo': None, 'coreSerialNo': None, 'hostSeqNo': None, 'hostStatus': None, 'payeeAcctMask': None, 'actualAmount': None, 'feeAmount': None, 'completedTime': None, 'failReasonCode': '10004', 'failReasonDesc': '收款账户不存在', 'retryFlag': False}}, 'success': False}
+2026-06-13 22:21:00 | ERROR    | [conftest] | pytest_runtest_makereport:924 | ✗ TEST FAILED | testcases/test_transfer.py::test_transfer[TC_TRANSFER_POS_BOUNDARY_003] | AssertionError: [TC_TRANSFER_POS_BOUNDARY_003] respCode不匹配: 期望 000000, 实际 10004, respMsg: 账户状态异常
+assert '10004' == '000000'
+  
+  [0m[91m- 000000[39;49;00m[90m[39;49;00m
+  [92m+ 10004[39;49;00m[90m[39;49;00m
+2026-06-13 22:21:00 | DEBUG    | [conftest] | pytest_runtest_makereport:929 | 完整异常栈:
+AssertionError: [TC_TRANSFER_POS_BOUNDARY_003] respCode不匹配: 期望 000000, 实际 10004, respMsg: 账户状态异常
+assert '10004' == '000000'
+  
+  [0m[91m- 000000[39;49;00m[90m[39;49;00m
+  [92m+ 10004[39;49;00m[90m[39;49;00m
+[<TracebackEntry E:\python\Lib\site-packages\_pytest\runner.py:353>, <TracebackEntry E:\python\Lib\site-packages\_pytest\runner.py:245>, <TracebackEntry E:\python\Lib\site-packages\pluggy\_hooks.py:512>, <TracebackEntry E:\python\Lib\site-packages\pluggy\_manager.py:120>, <TracebackEntry E:\python\Lib\site-packages\pluggy\_callers.py:167>, <TracebackEntry E:\python\Lib\site-packages\pluggy\_callers.py:139>, <TracebackEntry E:\python\Lib\site-packages\pytest_playwright\pytest_playwright.py:112>, <TracebackEntry E:\python\Lib\site-packages\pytest_playwright\pytest_playwright.py:107>, <TracebackEntry E:\python\Lib\site-packages\pluggy\_callers.py:139>, <TracebackEntry E:\python\Lib\site-packages\_pytest\logging.py:850>, <TracebackEntry E:\python\Lib\site-packages\pluggy\_callers.py:139>, <TracebackEntry E:\python\Lib\site-packages\_pytest\capture.py:900>, <TracebackEntry E:\python\Lib\site-packages\pluggy\_callers.py:139>, <TracebackEntry E:\python\Lib\site-packages\_pytest\skipping.py:268>, <TracebackEntry E:\python\Lib\site-packages\pluggy\_callers.py:121>, <TracebackEntry E:\python\Lib\site-packages\_pytest\runner.py:179>, <TracebackEntry E:\python\Lib\site-packages\_pytest\python.py:1720>, <TracebackEntry E:\python\Lib\site-packages\pluggy\_hooks.py:512>, <TracebackEntry E:\python\Lib\site-packages\pluggy\_manager.py:120>, <TracebackEntry E:\python\Lib\site-packages\pluggy\_callers.py:167>, <TracebackEntry E:\python\Lib\site-packages\pluggy\_callers.py:121>, <TracebackEntry E:\python\Lib\site-packages\_pytest\python.py:166>, <TracebackEntry E:\Python-Project\bank_ai_test_platform\testcases\test_transfer.py:363>]
+2026-06-13 22:21:00 | DEBUG    | [conftest] | db_conn:771 | 数据库连接已关闭
+2026-06-13 22:21:00 | INFO     | [conftest] | environment_reset:687 | ========================================================
+2026-06-13 22:21:00 | INFO     | [conftest] | environment_reset:688 | 🧹 [环境清理] 开始清理测试流水数据...
+2026-06-13 22:21:00 | INFO     | [conftest] | environment_reset:689 | ========================================================
+2026-06-13 22:21:00 | INFO     | [conftest] | environment_reset:693 | [环境清理] 完成: 0 条语句执行成功 ✓
+2026-06-13 22:21:00 | INFO     | [conftest] | environment_reset:704 | [环境自动化] 全部完成
+2026-06-13 22:21:00 | INFO     | [conftest] | session_db_conn:611 | Session 级别数据库连接已关闭
+2026-06-13 22:32:09 | INFO     | [conftest] | pytest_configure:987 | 📝 日志文件: E:\Python-Project\bank_ai_test_platform\logs\test_2026-06-13.log
+2026-06-13 22:32:09 | INFO     | [conftest] | pytest_configure:988 | 📊 日志级别: DEBUG (可设置 BANK_LOG_LEVEL 环境变量调整)
+2026-06-13 22:32:09 | INFO     | [conftest] | load_yaml_data:1078 | 成功加载 15 条 YAML 测试用例
+2026-06-13 22:32:09 | INFO     | [conftest] | collect_test_cases:1148 | [数据驱动] 从 1 个 YAML 文件加载了 15 条测试用例 (前缀: transfer)
+2026-06-13 22:32:09 | INFO     | [conftest] | create_db_connection:478 | 数据库连接成功: localhost:3306/bank_core
+2026-06-13 22:32:09 | INFO     | [conftest] | session_db_conn:598 | Session 级别数据库连接已建立（用于环境重置/清理）
+2026-06-13 22:32:09 | INFO     | [conftest] | environment_reset:656 | ========================================================
+2026-06-13 22:32:09 | INFO     | [conftest] | environment_reset:657 | 🔧 [环境重置] 开始执行测试环境自动重置...
+2026-06-13 22:32:09 | INFO     | [conftest] | environment_reset:658 | ========================================================
+2026-06-13 22:32:09 | INFO     | [conftest] | environment_reset:662 | [环境重置] 完成: 0 条语句执行成功 ✓
+2026-06-13 22:32:10 | INFO     | [conftest] | create_db_connection:478 | 数据库连接成功: localhost:3306/bank_core
+2026-06-13 22:32:10 | DEBUG    | [conftest] | db_conn:758 | 数据库连接已建立，将启用余额校验
+2026-06-13 22:32:10 | INFO     | [test_transfer] | test_transfer:265 | [TC_TRANSFER_POS_001] 开始执行: 正常转账-普通跨行转账
+2026-06-13 22:32:10 | DEBUG    | [test_transfer] | test_transfer:267 | [TC_TRANSFER_POS_001] 请求体:
+{'header': {'tranSeqNo': '20260613PITMB26416723', 'channelId': 'MB', 'tranTimestamp': '2026-06-13T22:32:10.032+08:00', 'version': '1.0.0', 'idempotencyToken': '7cde120f-1af1-4f3b-975b-e3f3ae9554e7'}, 'body': {'payer': {'acctNo': '6222021234567890', 'acctName': '张三', 'idType': '01', 'idNo': '310101199001011234', 'payerBankCode': '102100099996', 'payerBankName': '中国工商银行北京分行'}, 'payee': {'acctNo': '6228480012345678', 'acctName': '李四收款', 'payeeBankCode': '103100000026', 'payeeBankName': '中国农业银行上海分行', 'payeeBankUnionCode': '103290040217'}, 'transaction': {'amount': 100.0, 'currencyCode': 'CNY', 'bizType': '1001', 'purposeCode': '01', 'remitInfo': '货款转账', 'routeMode': 'AUTO', 'feeBearer': '01'}, 'security': {'smsCode': '834291', 'tradePwdEnc': 'Sm4Encrypted&Base64==', 'deviceFingerprint': 'fp_ios_16_xr_abc123', 'faceToken': 'liveBodyToken_23984729384', 'nonce': '1781361130_1147518714244276'}, 'extendInfo': {'clientIp': '202.106.0.20', 'macAddress': 'AA:BB:CC:DD:EE:FF', 'gpsCoordinate': {'longitude': '114.0646', 'latitude': '32.1282'}, 'terminalId': 'T20230001', 'terminalType': 'iOS_16.0_iPhone14'}}, 'signature': 'Base64Encoded_RSAwithSHA256_Signature_Placeholder'}
+2026-06-13 22:32:10 | DEBUG    | [conftest] | get_account_balance:510 | 查询余额: acct_no=6222021234567890, balance=100000.0
+2026-06-13 22:32:10 | INFO     | [test_transfer] | test_transfer:279 | [TC_TRANSFER_POS_001] 转账前余额: 6222021234567890 = 100,000.00
+2026-06-13 22:32:10 | INFO     | [test_transfer] | test_transfer:297 | [TC_TRANSFER_POS_001] POST http://localhost:8080/api/v1/transfer 金额=100.0 付款方=6222021234567890 收款方=6228480012345678
+2026-06-13 22:32:10 | INFO     | [apis.bank_api] | transfer:76 | → POST http://localhost:8080/api/v1/transfer | amount=100.0 | payer=6222021234567890 | payee=6228480012345678 | timeout=30s
+2026-06-13 22:32:10 | INFO     | [apis.bank_api] | transfer:128 | ← HTTP 200 | elapsed=0.129s | code=000000 msg=操作成功
+2026-06-13 22:32:10 | DEBUG    | [test_transfer] | test_transfer:334 | [TC_TRANSFER_POS_001] 响应体:
+{'code': '000000', 'message': '操作成功', 'data': {'header': {'tranSeqNo': '20260613PITMB26416723', 'respTime': '2026-06-13T22:32:10.1493376', 'version': '1.0.0', 'respCode': '000000', 'respMsg': '交易成功'}, 'body': {'tranStatus': 'SUCCESS', 'acpTranSeqNo': 'ACP2026061322321030146', 'coreSerialNo': 'CORE202606130CD22247', 'hostSeqNo': 'HVPS202606132232101130147', 'hostStatus': '04', 'payeeAcctMask': '622848******5678', 'actualAmount': 100.0, 'feeAmount': 2, 'completedTime': '2026-06-13T22:32:10.1452493', 'failReasonCode': None, 'failReasonDesc': None, 'retryFlag': None}}, 'success': True}
+2026-06-13 22:32:10 | DEBUG    | [conftest] | get_account_balance:510 | 查询余额: acct_no=6222021234567890, balance=99898.0
+2026-06-13 22:32:10 | INFO     | [test_transfer] | verify_account_balance:178 | [TC_TRANSFER_POS_001] 余额校验通过: acct=6222021234567890, 100,000.00 → 99,898.00 (amount=100.00, fee=2.00)
+2026-06-13 22:32:10 | DEBUG    | [conftest] | get_account_balance:510 | 查询余额: acct_no=6222021234567890, balance=99898.0
+2026-06-13 22:32:10 | INFO     | [test_transfer] | test_transfer:498 | [TC_TRANSFER_POS_001] ✓ 通过
+2026-06-13 22:32:10 | DEBUG    | [conftest] | pytest_runtest_makereport:947 | ✓ TEST PASSED | testcases/test_transfer.py::test_transfer[TC_TRANSFER_POS_001]
+2026-06-13 22:32:10 | DEBUG    | [conftest] | db_conn:771 | 数据库连接已关闭
+2026-06-13 22:32:10 | INFO     | [conftest] | environment_reset:687 | ========================================================
+2026-06-13 22:32:10 | INFO     | [conftest] | environment_reset:688 | 🧹 [环境清理] 开始清理测试流水数据...
+2026-06-13 22:32:10 | INFO     | [conftest] | environment_reset:689 | ========================================================
+2026-06-13 22:32:10 | INFO     | [conftest] | environment_reset:693 | [环境清理] 完成: 0 条语句执行成功 ✓
+2026-06-13 22:32:10 | INFO     | [conftest] | environment_reset:704 | [环境自动化] 全部完成
+2026-06-13 22:32:10 | INFO     | [conftest] | session_db_conn:611 | Session 级别数据库连接已关闭
+2026-06-13 22:33:02 | INFO     | [conftest] | pytest_configure:987 | 📝 日志文件: E:\Python-Project\bank_ai_test_platform\logs\test_2026-06-13.log
+2026-06-13 22:33:02 | INFO     | [conftest] | pytest_configure:988 | 📊 日志级别: DEBUG (可设置 BANK_LOG_LEVEL 环境变量调整)
+2026-06-13 22:33:02 | INFO     | [conftest] | load_yaml_data:1078 | 成功加载 15 条 YAML 测试用例
+2026-06-13 22:33:02 | INFO     | [conftest] | collect_test_cases:1148 | [数据驱动] 从 1 个 YAML 文件加载了 15 条测试用例 (前缀: transfer)
+2026-06-13 22:33:02 | INFO     | [conftest] | create_db_connection:478 | 数据库连接成功: localhost:3306/bank_core
+2026-06-13 22:33:02 | INFO     | [conftest] | session_db_conn:598 | Session 级别数据库连接已建立（用于环境重置/清理）
+2026-06-13 22:33:02 | INFO     | [conftest] | environment_reset:656 | ========================================================
+2026-06-13 22:33:02 | INFO     | [conftest] | environment_reset:657 | 🔧 [环境重置] 开始执行测试环境自动重置...
+2026-06-13 22:33:02 | INFO     | [conftest] | environment_reset:658 | ========================================================
+2026-06-13 22:33:02 | INFO     | [conftest] | environment_reset:662 | [环境重置] 完成: 0 条语句执行成功 ✓
+2026-06-13 22:33:02 | INFO     | [conftest] | create_db_connection:478 | 数据库连接成功: localhost:3306/bank_core
+2026-06-13 22:33:02 | DEBUG    | [conftest] | db_conn:758 | 数据库连接已建立，将启用余额校验
+2026-06-13 22:33:02 | INFO     | [test_transfer] | test_transfer:265 | [TC_TRANSFER_POS_001] 开始执行: 正常转账-普通跨行转账
+2026-06-13 22:33:02 | DEBUG    | [test_transfer] | test_transfer:267 | [TC_TRANSFER_POS_001] 请求体:
+{'header': {'tranSeqNo': '20260613PITMB30116104', 'channelId': 'MB', 'tranTimestamp': '2026-06-13T22:33:02.268+08:00', 'version': '1.0.0', 'idempotencyToken': '1e225f10-0b4e-4fca-9004-2d360ba7e19c'}, 'body': {'payer': {'acctNo': '6222021234567890', 'acctName': '张三', 'idType': '01', 'idNo': '310101199001011234', 'payerBankCode': '102100099996', 'payerBankName': '中国工商银行北京分行'}, 'payee': {'acctNo': '6228480012345678', 'acctName': '李四收款', 'payeeBankCode': '103100000026', 'payeeBankName': '中国农业银行上海分行', 'payeeBankUnionCode': '103290040217'}, 'transaction': {'amount': 100.0, 'currencyCode': 'CNY', 'bizType': '1001', 'purposeCode': '01', 'remitInfo': '货款转账', 'routeMode': 'AUTO', 'feeBearer': '01'}, 'security': {'smsCode': '834291', 'tradePwdEnc': 'Sm4Encrypted&Base64==', 'deviceFingerprint': 'fp_ios_16_xr_abc123', 'faceToken': 'liveBodyToken_23984729384', 'nonce': '1781361182_3165790740118003'}, 'extendInfo': {'clientIp': '202.106.0.20', 'macAddress': 'AA:BB:CC:DD:EE:FF', 'gpsCoordinate': {'longitude': '114.0646', 'latitude': '32.1282'}, 'terminalId': 'T20230001', 'terminalType': 'iOS_16.0_iPhone14'}}, 'signature': 'Base64Encoded_RSAwithSHA256_Signature_Placeholder'}
+2026-06-13 22:33:02 | DEBUG    | [conftest] | get_account_balance:510 | 查询余额: acct_no=6222021234567890, balance=99898.0
+2026-06-13 22:33:02 | INFO     | [test_transfer] | test_transfer:279 | [TC_TRANSFER_POS_001] 转账前余额: 6222021234567890 = 99,898.00
+2026-06-13 22:33:02 | INFO     | [test_transfer] | test_transfer:297 | [TC_TRANSFER_POS_001] POST http://localhost:8080/api/v1/transfer 金额=100.0 付款方=6222021234567890 收款方=6228480012345678
+2026-06-13 22:33:02 | INFO     | [apis.bank_api] | transfer:76 | → POST http://localhost:8080/api/v1/transfer | amount=100.0 | payer=6222021234567890 | payee=6228480012345678 | timeout=30s
+2026-06-13 22:33:02 | INFO     | [apis.bank_api] | transfer:128 | ← HTTP 200 | elapsed=0.046s | code=000000 msg=操作成功
+2026-06-13 22:33:02 | DEBUG    | [test_transfer] | test_transfer:334 | [TC_TRANSFER_POS_001] 响应体:
+{'code': '000000', 'message': '操作成功', 'data': {'header': {'tranSeqNo': '20260613PITMB30116104', 'respTime': '2026-06-13T22:33:02.311452', 'version': '1.0.0', 'respCode': '000000', 'respMsg': '交易成功'}, 'body': {'tranStatus': 'SUCCESS', 'acpTranSeqNo': 'ACP2026061322330282309', 'coreSerialNo': 'CORE2026061373232835', 'hostSeqNo': 'HVPS202606132233021182310', 'hostStatus': '04', 'payeeAcctMask': '622848******5678', 'actualAmount': 100.0, 'feeAmount': 2, 'completedTime': '2026-06-13T22:33:02.3092829', 'failReasonCode': None, 'failReasonDesc': None, 'retryFlag': None}}, 'success': True}
+2026-06-13 22:33:02 | DEBUG    | [conftest] | get_account_balance:510 | 查询余额: acct_no=6222021234567890, balance=99796.0
+2026-06-13 22:33:02 | INFO     | [test_transfer] | verify_account_balance:178 | [TC_TRANSFER_POS_001] 余额校验通过: acct=6222021234567890, 99,898.00 → 99,796.00 (amount=100.00, fee=2.00)
+2026-06-13 22:33:02 | DEBUG    | [conftest] | get_account_balance:510 | 查询余额: acct_no=6222021234567890, balance=99796.0
+2026-06-13 22:33:02 | INFO     | [test_transfer] | test_transfer:498 | [TC_TRANSFER_POS_001] ✓ 通过
+2026-06-13 22:33:02 | DEBUG    | [conftest] | pytest_runtest_makereport:947 | ✓ TEST PASSED | testcases/test_transfer.py::test_transfer[TC_TRANSFER_POS_001]
+2026-06-13 22:33:02 | DEBUG    | [conftest] | db_conn:771 | 数据库连接已关闭
+2026-06-13 22:33:02 | INFO     | [conftest] | create_db_connection:478 | 数据库连接成功: localhost:3306/bank_core
+2026-06-13 22:33:02 | DEBUG    | [conftest] | db_conn:758 | 数据库连接已建立，将启用余额校验
+2026-06-13 22:33:02 | INFO     | [test_transfer] | test_transfer:265 | [TC_TRANSFER_POS_FEE_002] 开始执行: 正向转账-跨行手续费扣除验证
+2026-06-13 22:33:02 | DEBUG    | [test_transfer] | test_transfer:267 | [TC_TRANSFER_POS_FEE_002] 请求体:
+{'header': {'tranSeqNo': '20260613PITMB81305990', 'channelId': 'MB', 'tranTimestamp': '2026-06-13T22:33:02.345+08:00', 'version': '1.0.0', 'idempotencyToken': '22df1e5e-22d3-4cd1-8597-1179bab22446'}, 'body': {'payer': {'acctNo': '6222021234567890', 'acctName': '张三', 'idType': '01', 'idNo': '310101199001011234', 'payerBankCode': '102100099996', 'payerBankName': '中国工商银行北京分行'}, 'payee': {'acctNo': '6228480012345678', 'acctName': '李四收款', 'payeeBankCode': '103100000026', 'payeeBankName': '中国农业银行上海分行', 'payeeBankUnionCode': '103290040217'}, 'transaction': {'amount': 100.0, 'currencyCode': 'CNY', 'bizType': '1001', 'purposeCode': '01', 'remitInfo': '货款转账', 'routeMode': 'AUTO', 'feeBearer': '01'}, 'security': {'smsCode': '834291', 'tradePwdEnc': 'Sm4Encrypted&Base64==', 'deviceFingerprint': 'fp_ios_16_xr_abc123', 'faceToken': 'liveBodyToken_23984729384', 'nonce': '1781361182_2464478569866018'}, 'extendInfo': {'clientIp': '202.106.0.20', 'macAddress': 'AA:BB:CC:DD:EE:FF', 'gpsCoordinate': {'longitude': '114.0646', 'latitude': '32.1282'}, 'terminalId': 'T20230001', 'terminalType': 'iOS_16.0_iPhone14'}}, 'signature': 'Base64Encoded_RSAwithSHA256_Signature_Placeholder'}
+2026-06-13 22:33:02 | DEBUG    | [conftest] | get_account_balance:510 | 查询余额: acct_no=6222021234567890, balance=99796.0
+2026-06-13 22:33:02 | INFO     | [test_transfer] | test_transfer:279 | [TC_TRANSFER_POS_FEE_002] 转账前余额: 6222021234567890 = 99,796.00
+2026-06-13 22:33:02 | INFO     | [test_transfer] | test_transfer:297 | [TC_TRANSFER_POS_FEE_002] POST http://localhost:8080/api/v1/transfer 金额=100.0 付款方=6222021234567890 收款方=6228480012345678
+2026-06-13 22:33:02 | INFO     | [apis.bank_api] | transfer:76 | → POST http://localhost:8080/api/v1/transfer | amount=100.0 | payer=6222021234567890 | payee=6228480012345678 | timeout=30s
+2026-06-13 22:33:02 | INFO     | [apis.bank_api] | transfer:128 | ← HTTP 200 | elapsed=0.021s | code=000000 msg=操作成功
+2026-06-13 22:33:02 | DEBUG    | [test_transfer] | test_transfer:334 | [TC_TRANSFER_POS_FEE_002] 响应体:
+{'code': '000000', 'message': '操作成功', 'data': {'header': {'tranSeqNo': '20260613PITMB81305990', 'respTime': '2026-06-13T22:33:02.3626181', 'version': '1.0.0', 'respCode': '000000', 'respMsg': '交易成功'}, 'body': {'tranStatus': 'SUCCESS', 'acpTranSeqNo': 'ACP2026061322330282361', 'coreSerialNo': 'CORE20260613758B9BC6', 'hostSeqNo': 'HVPS202606132233021182362', 'hostStatus': '04', 'payeeAcctMask': '622848******5678', 'actualAmount': 100.0, 'feeAmount': 2, 'completedTime': '2026-06-13T22:33:02.3611538', 'failReasonCode': None, 'failReasonDesc': None, 'retryFlag': None}}, 'success': True}
+2026-06-13 22:33:02 | DEBUG    | [conftest] | get_account_balance:510 | 查询余额: acct_no=6222021234567890, balance=99694.0
+2026-06-13 22:33:02 | INFO     | [test_transfer] | verify_account_balance:178 | [TC_TRANSFER_POS_FEE_002] 余额校验通过: acct=6222021234567890, 99,796.00 → 99,694.00 (amount=100.00, fee=2.00)
+2026-06-13 22:33:02 | DEBUG    | [conftest] | get_account_balance:510 | 查询余额: acct_no=6222021234567890, balance=99694.0
+2026-06-13 22:33:02 | INFO     | [test_transfer] | test_transfer:498 | [TC_TRANSFER_POS_FEE_002] ✓ 通过
+2026-06-13 22:33:02 | DEBUG    | [conftest] | pytest_runtest_makereport:947 | ✓ TEST PASSED | testcases/test_transfer.py::test_transfer[TC_TRANSFER_POS_FEE_002]
+2026-06-13 22:33:02 | DEBUG    | [conftest] | db_conn:771 | 数据库连接已关闭
+2026-06-13 22:33:02 | INFO     | [conftest] | create_db_connection:478 | 数据库连接成功: localhost:3306/bank_core
+2026-06-13 22:33:02 | DEBUG    | [conftest] | db_conn:758 | 数据库连接已建立，将启用余额校验
+2026-06-13 22:33:02 | INFO     | [test_transfer] | test_transfer:265 | [TC_TRANSFER_POS_BOUNDARY_003] 开始执行: 边界值测试-最小转账金额0.01元
+2026-06-13 22:33:02 | DEBUG    | [test_transfer] | test_transfer:267 | [TC_TRANSFER_POS_BOUNDARY_003] 请求体:
+{'header': {'tranSeqNo': '20260613PITMB18571581', 'channelId': 'MB', 'tranTimestamp': '2026-06-13T22:33:02.397+08:00', 'version': '1.0.0', 'idempotencyToken': '21d00951-abe3-4b3f-ab8b-93981c39d4db'}, 'body': {'payer': {'acctNo': '6222021234567890', 'acctName': '张三', 'idType': '01', 'idNo': '310101199001011234', 'payerBankCode': '102100099996', 'payerBankName': '中国工商银行北京分行'}, 'payee': {'acctNo': '6228480012345678', 'acctName': '李四收款', 'payeeBankCode': '103100000026', 'payeeBankName': '中国农业银行上海分行', 'payeeBankUnionCode': '103290040217'}, 'transaction': {'amount': 0.01, 'currencyCode': 'CNY', 'bizType': '1001', 'purposeCode': '01', 'remitInfo': '货款转账', 'routeMode': 'AUTO', 'feeBearer': '01'}, 'security': {'smsCode': '834291', 'tradePwdEnc': 'Sm4Encrypted&Base64==', 'deviceFingerprint': 'fp_ios_16_xr_abc123', 'faceToken': 'liveBodyToken_23984729384', 'nonce': '1781361182_1639326253751750'}, 'extendInfo': {'clientIp': '202.106.0.20', 'macAddress': 'AA:BB:CC:DD:EE:FF', 'gpsCoordinate': {'longitude': '114.0646', 'latitude': '32.1282'}, 'terminalId': 'T20230001', 'terminalType': 'iOS_16.0_iPhone14'}}, 'signature': 'Base64Encoded_RSAwithSHA256_Signature_Placeholder'}
+2026-06-13 22:33:02 | DEBUG    | [conftest] | get_account_balance:510 | 查询余额: acct_no=6222021234567890, balance=99694.0
+2026-06-13 22:33:02 | INFO     | [test_transfer] | test_transfer:279 | [TC_TRANSFER_POS_BOUNDARY_003] 转账前余额: 6222021234567890 = 99,694.00
+2026-06-13 22:33:02 | INFO     | [test_transfer] | test_transfer:297 | [TC_TRANSFER_POS_BOUNDARY_003] POST http://localhost:8080/api/v1/transfer 金额=0.01 付款方=6222021234567890 收款方=6228480012345678
+2026-06-13 22:33:02 | INFO     | [apis.bank_api] | transfer:76 | → POST http://localhost:8080/api/v1/transfer | amount=0.01 | payer=6222021234567890 | payee=6228480012345678 | timeout=30s
+2026-06-13 22:33:02 | INFO     | [apis.bank_api] | transfer:128 | ← HTTP 200 | elapsed=0.020s | code=000000 msg=操作成功
+2026-06-13 22:33:02 | DEBUG    | [test_transfer] | test_transfer:334 | [TC_TRANSFER_POS_BOUNDARY_003] 响应体:
+{'code': '000000', 'message': '操作成功', 'data': {'header': {'tranSeqNo': '20260613PITMB18571581', 'respTime': '2026-06-13T22:33:02.4125025', 'version': '1.0.0', 'respCode': '000000', 'respMsg': '交易成功'}, 'body': {'tranStatus': 'SUCCESS', 'acpTranSeqNo': 'ACP2026061322330282411', 'coreSerialNo': 'CORE202606131D1E4D8D', 'hostSeqNo': 'HVPS202606132233021182412', 'hostStatus': '04', 'payeeAcctMask': '622848******5678', 'actualAmount': 0.01, 'feeAmount': 2, 'completedTime': '2026-06-13T22:33:02.4114149', 'failReasonCode': None, 'failReasonDesc': None, 'retryFlag': None}}, 'success': True}
+2026-06-13 22:33:02 | DEBUG    | [conftest] | get_account_balance:510 | 查询余额: acct_no=6222021234567890, balance=99691.99
+2026-06-13 22:33:02 | INFO     | [test_transfer] | verify_account_balance:178 | [TC_TRANSFER_POS_BOUNDARY_003] 余额校验通过: acct=6222021234567890, 99,694.00 → 99,691.99 (amount=0.01, fee=2.00)
+2026-06-13 22:33:02 | DEBUG    | [conftest] | get_account_balance:510 | 查询余额: acct_no=6222021234567890, balance=99691.99
+2026-06-13 22:33:02 | INFO     | [test_transfer] | test_transfer:498 | [TC_TRANSFER_POS_BOUNDARY_003] ✓ 通过
+2026-06-13 22:33:02 | DEBUG    | [conftest] | pytest_runtest_makereport:947 | ✓ TEST PASSED | testcases/test_transfer.py::test_transfer[TC_TRANSFER_POS_BOUNDARY_003]
+2026-06-13 22:33:02 | DEBUG    | [conftest] | db_conn:771 | 数据库连接已关闭
+2026-06-13 22:33:02 | INFO     | [conftest] | environment_reset:687 | ========================================================
+2026-06-13 22:33:02 | INFO     | [conftest] | environment_reset:688 | 🧹 [环境清理] 开始清理测试流水数据...
+2026-06-13 22:33:02 | INFO     | [conftest] | environment_reset:689 | ========================================================
+2026-06-13 22:33:02 | INFO     | [conftest] | environment_reset:693 | [环境清理] 完成: 0 条语句执行成功 ✓
+2026-06-13 22:33:02 | INFO     | [conftest] | environment_reset:704 | [环境自动化] 全部完成
+2026-06-13 22:33:02 | INFO     | [conftest] | session_db_conn:611 | Session 级别数据库连接已关闭

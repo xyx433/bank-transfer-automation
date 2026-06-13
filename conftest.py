@@ -14,6 +14,7 @@ import time
 import uuid
 import json
 import logging
+import re
 from dataclasses import dataclass, field
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
@@ -323,6 +324,92 @@ def api_post_with_context(
         raise
 
 
+# ── 城市坐标映射表 ──
+# 格式: { "城市名": {"longitude": "经度", "latitude": "纬度"} }
+# 新增城市只需在此注册一行
+_CITY_COORDINATES = {
+    "信阳": {"longitude": "114.0646", "latitude": "32.1282"},
+}
+
+
+def _replace_time_location(data: Any) -> None:
+    """
+    递归遍历字典/列表，替换字符串值中的占位符（原地修改）。
+
+    支持三种占位符语法 ——————————————————————————————
+
+    1. <location:城市名>
+       按字段名语义替换为对应城市的经纬度坐标。
+       如果键名含 "longitude" → 经度值；
+       如果键名含 "latitude"  → 纬度值。
+
+       示例:
+         YAML:  longitude: "<location:信阳>"
+         结果:  "longitude": "114.0646"
+
+         YAML:  latitude: "<location:信阳>"
+         结果:  "latitude": "32.1282"
+
+    2. <time:格式字符串>
+       使用 datetime.now(CST).strftime(格式字符串) 替换。
+       格式字符串为 Python strftime 标准格式。
+
+       示例:
+         YAML:  customDate: "<time:%Y-%m-%d>"
+         结果:  "customDate": "2026-06-13"
+
+         YAML:  timestampMs: "<time:%Y-%m-%dT%H:%M:%S>"
+         结果:  "timestampMs": "2026-06-13T14:30:05"
+
+    3. <time_location>（向后兼容旧版）
+       键名含 "longitude" → 替换为 114.0646
+       键名含 "latitude"  → 替换为 32.1282
+
+    支持嵌套 dict 和 list 的深度遍历。
+
+    Args:
+        data: 待处理的字典或列表（原地修改）
+    """
+    if isinstance(data, dict):
+        for key, value in data.items():
+            if isinstance(value, str):
+                # ── 1. <location:城市名> 占位符 ──
+                loc_match = re.match(r"^<location:(.+)>$", value.strip())
+                if loc_match:
+                    city = loc_match.group(1).strip()
+                    coords = _CITY_COORDINATES.get(city)
+                    if coords:
+                        key_lower = key.lower()
+                        if "longitude" in key_lower:
+                            data[key] = coords["longitude"]
+                        elif "latitude" in key_lower:
+                            data[key] = coords["latitude"]
+                    continue
+
+                # ── 2. <time:格式> 占位符 ──
+                time_match = re.match(r"^<time:(.+)>$", value.strip())
+                if time_match:
+                    fmt = time_match.group(1).strip()
+                    data[key] = datetime.now(CST).strftime(fmt)
+                    continue
+
+                # ── 3. 向后兼容: <time_location> ──
+                if "<time_location>" in value:
+                    key_lower = key.lower()
+                    if "longitude" in key_lower:
+                        data[key] = value.replace("<time_location>", "114.0646")
+                    elif "latitude" in key_lower:
+                        data[key] = value.replace("<time_location>", "32.1282")
+
+            elif isinstance(value, (dict, list)):
+                _replace_time_location(value)
+
+    elif isinstance(data, list):
+        for item in data:
+            if isinstance(item, (dict, list)):
+                _replace_time_location(item)
+
+
 def build_request_payload(overrides: dict | None = None) -> dict:
     """
     构建完整的请求报文
@@ -349,6 +436,9 @@ def build_request_payload(overrides: dict | None = None) -> dict:
 
     if overrides:
         base = deep_merge(base, overrides)
+
+    # ---- 递归替换 <time_location> 占位符为地理坐标 ----
+    _replace_time_location(base)
 
     return base
 

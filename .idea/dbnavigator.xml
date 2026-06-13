@@ -51,14 +51,56 @@ DESCRIBE transfer_record;
 UPDATE account
 SET balance = 1000000.00,
     account_status = 'NORMAL'
-WHERE acct_name = '李四收款'; -- 根据你之前的描述推测的名字]]></console>
+WHERE acct_name = '李四收款'; -- 根据你之前的描述推测的名字
+
+DESCRIBE account;
+
+-- 1. 先删除旧数据，防止主键冲突
+DELETE FROM account WHERE acct_no = '6228480012345678';
+
+-- 2. 插入新数据（严格匹配真实表结构，补全所有必填项）
+INSERT INTO account (
+    acct_no,
+    acct_name,
+    id_type,
+    id_no,
+    bank_code,
+    bank_name,
+    currency_code,
+    balance,
+    frozen_amount,
+    in_transit_amount,
+    account_status,
+    star_level,
+    daily_limit,
+    single_limit,
+    version
+) VALUES (
+    '6228480012345678',   -- acct_no
+    '李四收款',           -- acct_name
+    '01',                 -- id_type (身份证)
+    '411502199001011234', -- id_no (随便编一个合法的18位身份证号)
+    '100000',             -- bank_code (假设的银行代码)
+    '测试银行',           -- bank_name
+    'CNY',                -- currency_code
+    500000.00,            -- balance
+    0.00,                 -- frozen_amount
+    0.00,                 -- in_transit_amount
+    'NORMAL',             -- account_status
+    1,                    -- star_level
+    200000.00,            -- daily_limit
+    50000.00,             -- single_limit
+    0                     -- version
+);]]></console>
     </connection>
   </component>
   <component name="DBNavigator.Project.DatabaseEditorStateManager">
     <last-used-providers />
   </component>
   <component name="DBNavigator.Project.DatabaseFileManager">
-    <open-files />
+    <open-files>
+      <object connection-id="dc73f0d2-2909-42a1-94d4-fbbfcde6ec60" object-ref="consoles/bank" />
+    </open-files>
   </component>
   <component name="DBNavigator.Project.DatabasePrerequisiteManager">
     <prerequisites />
