@@ -1,42 +1,77 @@
-name: 🏦 银行转账自动化测试流水线
+name: Bank Transfer CI/CD
 
-on:
-  push:
-    branches: [ main ]  # 当推送到 main 分支时触发
-  workflow_dispatch:    # 允许手动点击按钮触发
+on: [push, pull_request]
 
 jobs:
-  test:
-    runs-on: ubuntu-latest  # 使用最新的 Ubuntu 服务器环境
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    # 1. 启动 MySQL 数据库服务
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          MYSQL_DATABASE: ${{ secrets.DB_NAME }}
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
 
     steps:
-      - name: 1. 检出代码
+      # 2. 【关键】先拉取 Python 测试代码 (当前仓库)
+      - name: Checkout Python Test Code
         uses: actions/checkout@v3
 
-      - name: 2. 设置 Python 环境
+      # 3. 【关键】再去拉取 Java 后端代码 (跨仓库拉取)
+      - name: Checkout Java Backend Code
+        uses: actions/checkout@v3
+        with:
+          # ⚠️ 请替换成你 Java 项目的真实 GitHub 仓库地址！
+          repository: 你的用户名/bank-transfer-java
+          path: java-backend  # 把 Java 代码下载到名为 java-backend 的文件夹里
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      # 4. 构建并运行 Java 后端 Docker 容器
+      - name: Build and Run Backend
+        run: |
+          # 进入 java-backend 目录构建镜像
+          docker build -t bank-backend ./java-backend
+          docker run -d \
+            --name my-bank-app \
+            -p 8080:8080 \
+            -e SPRING_DATASOURCE_URL=jdbc:mysql://host.docker.internal:3306/${{ secrets.DB_NAME }}?useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=UTF-8&allowPublicKeyRetrieval=true \
+            -e SPRING_DATASOURCE_USERNAME=root \
+            -e SPRING_DATASOURCE_PASSWORD=${{ secrets.DB_PASSWORD }} \
+            bank-backend
+
+      # 5. 等待后端启动
+      - name: Wait for Backend to Start
+        run: |
+          echo "Waiting for server..."
+          timeout 90 bash -c 'until curl -s http://localhost:8080/api/v1/transfer > /dev/null; do sleep 3; done' || (echo "Server failed to start" && exit 1)
+          echo "Server is UP!"
+
+      # 6. 设置 Python 环境
+      - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.10' # 指定 Python 版本
+          python-version: '3.10'
 
-      - name: 3. 安装依赖
+      # 7. 安装 Python 依赖 (在当前目录找 requirements.txt)
+      - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install pytest allure-pytest requests anthropic pyyaml
-          # 如果你的 requirements.txt 里有其他包，也可以用 pip install -r requirements.txt
+          pip install -r requirements.txt
+          pip install pymysql requests pytest
 
-      - name: 4. 执行自动化测试
-        env:
-          # 👇 关键一步：把 GitHub Secrets 里的值传给环境变量
-          # 这样 Python 代码里的 os.environ.get('DEEPSEEK_API_KEY') 就能拿到了
-          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
-        run: |
-          pytest -s -v --alluredir=./allure-results
+      # 8. 运行测试 (在当前目录找 testcases)
+      - name: Run Tests
+        run: pytest testcases/ -v
 
-      - name: 5. 生成 Allure 报告
-        if: always() # 即使测试失败也要生成报告
-        uses: simple-elf/allure-report-action@master
-        with:
-          gh_pages: gh-pages
-          allure_results: allure-results
-          allure_report: allure-report
-          allure_history: allure-history
+      # 9. 清理
+      - name: Cleanup
+        if: always()
+        run: docker rm -f my-bank-app
