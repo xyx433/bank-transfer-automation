@@ -1,0 +1,18 @@
+[32mINFO    [0m conftest:conftest.py:478 数据库连接成功: localhost:3306/bank_core
+[35mDEBUG   [0m conftest:conftest.py:758 数据库连接已建立，将启用余额校验
+[32mINFO    [0m test_transfer:test_transfer.py:265 [TC_Transfer_060] 开始执行: 边界值-付款人证件号码格式非法
+[35mDEBUG   [0m test_transfer:test_transfer.py:267 [TC_Transfer_060] 请求体:
+{'header': {'tranSeqNo': '20260614PITMB28793369', 'channelId': 'MB', 'tranTimestamp': '2026-06-14T22:55:28.726+08:00', 'version': '1.0.0', 'idempotencyToken': '42e2e158-88cf-4f6e-a17f-c62283efd6ae'}, 'body': {'payer': {'acctNo': '6222021234567890', 'acctName': '张三', 'idType': '01', 'idNo': 'INVALID_ID_12345', 'payerBankCode': '102100099996', 'payerBankName': '中国工商银行北京分行'}, 'payee': {'acctNo': '6228480012345678', 'acctName': '李四收款', 'payeeBankCode': '103100000026', 'payeeBankName': '中国农业银行上海分行', 'payeeBankUnionCode': '103290040217'}, 'transaction': {'amount': 100.0, 'currencyCode': 'CNY', 'bizType': '1001', 'purposeCode': '01', 'remitInfo': '货款转账', 'routeMode': 'AUTO', 'feeBearer': '01'}, 'security': {'smsCode': '834291', 'tradePwdEnc': 'Sm4Encrypted&Base64==', 'deviceFingerprint': 'fp_ios_16_xr_abc123', 'faceToken': 'liveBodyToken_23984729384', 'nonce': '1781448928_2699972270397112'}, 'extendInfo': {'clientIp': '202.106.0.20', 'macAddress': 'AA:BB:CC:DD:EE:FF', 'gpsCoordinate': {'longitude': 116.4074, 'latitude': 39.9042}, 'terminalId': 'T20230001', 'terminalType': 'iOS_16.0_iPhone14'}}, 'signature': 'Base64Encoded_RSAwithSHA256_Signature_Placeholder'}
+[32mINFO    [0m test_transfer:test_transfer.py:297 [TC_Transfer_060] POST http://localhost:8080/api/v1/transfer 金额=100.0 付款方=6222021234567890 收款方=6228480012345678
+[32mINFO    [0m apis.bank_api:bank_api.py:76 → POST http://localhost:8080/api/v1/transfer | amount=100.0 | payer=6222021234567890 | payee=6228480012345678 | timeout=30s
+[32mINFO    [0m apis.bank_api:bank_api.py:128 ← HTTP 200 | elapsed=0.006s | code=10002 msg=单日累计转账限额超限
+[35mDEBUG   [0m test_transfer:test_transfer.py:334 [TC_Transfer_060] 响应体:
+{'code': '10002', 'message': '单日累计转账限额超限', 'data': {'header': {'tranSeqNo': '20260614PITMB28793369', 'respTime': '2026-06-14T22:55:28.731429500', 'version': '1.0.0', 'respCode': '10002', 'respMsg': '单日累计转账限额超限'}, 'body': {'tranStatus': 'FAILED', 'acpTranSeqNo': None, 'coreSerialNo': None, 'hostSeqNo': None, 'hostStatus': None, 'payeeAcctMask': None, 'actualAmount': None, 'feeAmount': None, 'completedTime': None, 'failReasonCode': '10002', 'failReasonDesc': '单日累计转账限额超限，单日限额：200000，当日已转：199900.11，本笔金额：100.0', 'retryFlag': False}}, 'success': False}
+[32mINFO    [0m test_transfer:test_transfer.py:498 [TC_Transfer_060] ✓ 通过
+[35mDEBUG   [0m conftest:conftest.py:771 数据库连接已关闭
+[32mINFO    [0m conftest:conftest.py:687 ========================================================
+[32mINFO    [0m conftest:conftest.py:688 🧹 [环境清理] 开始清理测试流水数据...
+[32mINFO    [0m conftest:conftest.py:689 ========================================================
+[32mINFO    [0m conftest:conftest.py:693 [环境清理] 完成: 0 条语句执行成功 ✓
+[32mINFO    [0m conftest:conftest.py:704 [环境自动化] 全部完成
+[32mINFO    [0m conftest:conftest.py:611 Session 级别数据库连接已关闭

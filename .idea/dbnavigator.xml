@@ -11,10 +11,10 @@
   </component>
   <component name="DBNavigator.Project.DatabaseAssistantManager">
     <assistants>
-      <assistant-state connection-id="dc73f0d2-2909-42a1-94d4-fbbfcde6ec60" assistant-type="SELECT_AI" default-profile-name="" selected-chat-id="" availability="UNAVAILABLE" acknowledgement="NONE">
+      <assistant-state connection-id="dc73f0d2-2909-42a1-94d4-fbbfcde6ec60" assistant-type="PUBLIC" default-profile-name="" selected-chat-id="" availability="AVAILABLE" acknowledgement="NONE" selected="true">
         <tools />
       </assistant-state>
-      <assistant-state connection-id="dc73f0d2-2909-42a1-94d4-fbbfcde6ec60" assistant-type="PUBLIC" default-profile-name="" selected-chat-id="" availability="AVAILABLE" acknowledgement="NONE" selected="true">
+      <assistant-state connection-id="dc73f0d2-2909-42a1-94d4-fbbfcde6ec60" assistant-type="SELECT_AI" default-profile-name="" selected-chat-id="" availability="UNAVAILABLE" acknowledgement="NONE">
         <tools />
       </assistant-state>
     </assistants>
@@ -91,7 +91,9 @@ INSERT INTO account (
     200000.00,            -- daily_limit
     50000.00,             -- single_limit
     0                     -- version
-);]]></console>
+);
+
+DESCRIBE account;]]></console>
     </connection>
   </component>
   <component name="DBNavigator.Project.DatabaseEditorStateManager">

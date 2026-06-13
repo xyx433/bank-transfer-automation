@@ -1,0 +1,28 @@
+{
+  "code": "10004",
+  "message": "账户状态异常",
+  "data": {
+    "header": {
+      "tranSeqNo": "20260614PITMB19516183",
+      "respTime": "2026-06-14T22:55:26.949616600",
+      "version": "1.0.0",
+      "respCode": "10004",
+      "respMsg": "账户状态异常"
+    },
+    "body": {
+      "tranStatus": "FAILED",
+      "acpTranSeqNo": null,
+      "coreSerialNo": null,
+      "hostSeqNo": null,
+      "hostStatus": null,
+      "payeeAcctMask": null,
+      "actualAmount": null,
+      "feeAmount": null,
+      "completedTime": null,
+      "failReasonCode": "10004",
+      "failReasonDesc": "付款账户状态异常：休眠户，不可转账",
+      "retryFlag": false
+    }
+  },
+  "success": false
+}
