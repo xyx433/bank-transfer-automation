@@ -1,0 +1,53 @@
+{
+  "header": {
+    "tranSeqNo": "20260613PITMB93658619",
+    "channelId": "MB",
+    "tranTimestamp": "2026-06-13T16:10:20.614+08:00",
+    "version": "1.0.0",
+    "idempotencyToken": "2ac61dc0-db7d-45d0-b39b-762f6a019e1a"
+  },
+  "body": {
+    "payer": {
+      "acctNo": "6222021234567890",
+      "acctName": "张三",
+      "idType": "01",
+      "idNo": "310101199001011234",
+      "payerBankCode": "102100099996",
+      "payerBankName": "中国工商银行北京分行"
+    },
+    "payee": {
+      "acctNo": "9999999999999999",
+      "acctName": "不存在的收款人",
+      "payeeBankCode": "000000000000",
+      "payeeBankName": "不存在银行",
+      "payeeBankUnionCode": "103290040217"
+    },
+    "transaction": {
+      "amount": 999999.99,
+      "currencyCode": "CNY",
+      "bizType": "1001",
+      "purposeCode": "01",
+      "remitInfo": "货款转账",
+      "routeMode": "AUTO",
+      "feeBearer": "01"
+    },
+    "security": {
+      "smsCode": "******",
+      "tradePwdEnc": "******",
+      "deviceFingerprint": "fp_ios_16_xr_abc123",
+      "faceToken": "******",
+      "nonce": "1781338220_1635765310110507"
+    },
+    "extendInfo": {
+      "clientIp": "202.106.0.20",
+      "macAddress": "AA:BB:CC:DD:EE:FF",
+      "gpsCoordinate": {
+        "longitude": 116.4074,
+        "latitude": 39.9042
+      },
+      "terminalId": "T20230001",
+      "terminalType": "iOS_16.0_iPhone14"
+    }
+  },
+  "signature": "Base64Encoded_RSAwithSHA256_Signature_Placeholder"
+}

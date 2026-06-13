@@ -1,0 +1,20 @@
+Status: failed
+Steps count: 4
+
+Step 1: 构建异常请求报文 (不存在的收款人 + 超大金额)
+
+Step 2: 发送异常转账请求
+
+Step 3: 故意触发断言失败 → 验证 Allure 失败附件
+
+Step 4: 🔍 失败自动诊断信息 (Auto-Captured)
+  -> [application/json] 🔴 请求报文
+  -> [application/json] 🟢 响应报文
+  -> [application/json] 📋 Response Headers (关键响应头)
+  -> [text/plain] ⏱️ 耗时
+  -> [text/plain] 🔍 Failure Context Summary (失败上下文摘要)
+
+Top-level attachments:
+  -> [application/json] 📤 Request Body (请求体)
+  -> [application/json] 📥 Response Body (响应体)
+  -> [text/plain] log

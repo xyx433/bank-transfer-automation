@@ -1,0 +1,27 @@
+INFO     conftest:conftest.py:388 数据库连接成功: localhost:3306/bank_core
+INFO     conftest:conftest.py:508 Session 级别数据库连接已建立（用于环境重置/清理）
+INFO     conftest:conftest.py:566 ========================================================
+INFO     conftest:conftest.py:567 🔧 [环境重置] 开始执行测试环境自动重置...
+INFO     conftest:conftest.py:568 ========================================================
+INFO     conftest:conftest.py:572 [环境重置] 完成: 0 条语句执行成功 ✓
+INFO     test_verify_allure_attachments:test_verify_allure_attachments.py:73 已构造异常请求报文:
+INFO     test_verify_allure_attachments:test_verify_allure_attachments.py:74   收款账号: 9999999999999999
+INFO     test_verify_allure_attachments:test_verify_allure_attachments.py:75   收款人:   不存在的收款人
+INFO     test_verify_allure_attachments:test_verify_allure_attachments.py:76   转账金额: 999999.99
+INFO     test_verify_allure_attachments:test_verify_allure_attachments.py:80 发送转账请求 (预期后端返回错误)...
+INFO     apis.bank_api:bank_api.py:76 → POST http://localhost:8080/api/v1/transfer | amount=999999.99 | payer=6222021234567890 | payee=9999999999999999 | timeout=30s
+INFO     apis.bank_api:bank_api.py:128 ← HTTP 200 | elapsed=0.039s | code=10001 msg=付款账户余额不足
+INFO     test_verify_allure_attachments:test_verify_allure_attachments.py:113 ============================================================
+INFO     test_verify_allure_attachments:test_verify_allure_attachments.py:114 🔍 即将故意触发断言失败，以验证 Allure 失败附件功能
+INFO     test_verify_allure_attachments:test_verify_allure_attachments.py:115    HTTP 状态码: 200
+INFO     test_verify_allure_attachments:test_verify_allure_attachments.py:116    接口耗时:   0.039s
+INFO     test_verify_allure_attachments:test_verify_allure_attachments.py:117    test_context.request_payload: ✅ 已捕获
+INFO     test_verify_allure_attachments:test_verify_allure_attachments.py:118    test_context.response_body:  ✅ 已捕获
+INFO     test_verify_allure_attachments:test_verify_allure_attachments.py:119    test_context.elapsed_seconds: ✅ 已捕获
+INFO     test_verify_allure_attachments:test_verify_allure_attachments.py:120 ============================================================
+INFO     conftest:conftest.py:597 ========================================================
+INFO     conftest:conftest.py:598 🧹 [环境清理] 开始清理测试流水数据...
+INFO     conftest:conftest.py:599 ========================================================
+INFO     conftest:conftest.py:603 [环境清理] 完成: 0 条语句执行成功 ✓
+INFO     conftest:conftest.py:614 [环境自动化] 全部完成
+INFO     conftest:conftest.py:521 Session 级别数据库连接已关闭

@@ -1,0 +1,42 @@
+name: 🏦 银行转账自动化测试流水线
+
+on:
+  push:
+    branches: [ main ]  # 当推送到 main 分支时触发
+  workflow_dispatch:    # 允许手动点击按钮触发
+
+jobs:
+  test:
+    runs-on: ubuntu-latest  # 使用最新的 Ubuntu 服务器环境
+
+    steps:
+      - name: 1. 检出代码
+        uses: actions/checkout@v3
+
+      - name: 2. 设置 Python 环境
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10' # 指定 Python 版本
+
+      - name: 3. 安装依赖
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest allure-pytest requests anthropic pyyaml
+          # 如果你的 requirements.txt 里有其他包，也可以用 pip install -r requirements.txt
+
+      - name: 4. 执行自动化测试
+        env:
+          # 👇 关键一步：把 GitHub Secrets 里的值传给环境变量
+          # 这样 Python 代码里的 os.environ.get('DEEPSEEK_API_KEY') 就能拿到了
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+        run: |
+          pytest -s -v --alluredir=./allure-results
+
+      - name: 5. 生成 Allure 报告
+        if: always() # 即使测试失败也要生成报告
+        uses: simple-elf/allure-report-action@master
+        with:
+          gh_pages: gh-pages
+          allure_results: allure-results
+          allure_report: allure-report
+          allure_history: allure-history

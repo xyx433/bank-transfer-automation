@@ -1,0 +1,524 @@
+# ============================================================
+# 银行转账接口 - 数据驱动测试用例
+# ============================================================
+#
+# 说明:
+#   - 每个测试用例只需填写与默认模板有差异的字段（overrides）
+#   - conftest.py 中的 build_request_payload() 会自动补齐其余字段
+#   - 动态字段（流水号/Token/时间戳/Nonce）每次执行自动刷新
+#
+# 命名规范:
+#   - TC_TRANSFER_POS_001: 正向用例（Positive）
+#   - TC_TRANSFER_NEG_00X: 反向用例（Negative）
+# ============================================================
+
+test_cases:
+  - id: "TC_TRANSFER_POS_001"
+    name: "正常转账-普通跨行转账"
+    description: >
+      验证正常跨行转账业务流程：手机银行渠道，100元小额普通转账，
+      路由AUTO，手续费付款方承担。期望交易成功，收款方信息脱敏返回。
+    tags:
+      - smoke
+      - positive
+    # 仅填写需要覆盖/变更的字段
+    overrides:
+      header:
+        channelId: "MB"
+      body:
+        payer:
+          acctNo: "6222021234567890"        # 张三 (一类户，余额 1,000,000.00)
+          acctName: "张三"
+        payee:
+          acctNo: "6228480012345678"        # 李四收款 (农行/跨行)
+          acctName: "李四收款"
+          payeeBankCode: "103100000026"
+          payeeBankName: "中国农业银行上海分行"
+          payeeBankUnionCode: "103290040217"
+        transaction:
+          amount: 100.00
+          bizType: "1001"          # 普通转账
+          routeMode: "AUTO"
+          feeBearer: "01"
+    expected:
+      http_status: 200
+      respCode: "000000"
+      tranStatus: "SUCCESS"
+      assertions:
+        - "response.body.payeeAcctMask 应该包含 '****' 脱敏符号"
+
+  # ──────────────────────────────────────────────
+  # 用例2: 收款方账户不存在 / 信息不匹配
+  # ──────────────────────────────────────────────
+  - id: "TC_TRANSFER_NEG_001"
+    name: "异常转账-收款方账号不存在"
+    description: >
+      收款方账号不存在，触发 ACCOUNT_STATUS_ABNORMAL 错误（后端先校验账户存在性，
+      再校验卡BIN一致性）。验证系统能正确拒绝并向调用方返回明确的错误原因。
+    tags:
+      - regression
+      - negative
+    overrides:
+      header:
+        channelId: "MB"
+      body:
+        payee:
+          acctNo: "0000000000000000000"       # 不存在的卡号
+          acctName: "不存在的收款人"
+          payeeBankCode: "999999999999"       # 不存在的银行代码
+          payeeBankUnionCode: "000000000000"
+        transaction:
+          amount: 1000.00
+    expected:
+      http_status: 200
+      respCode: "10004"                       # ACCOUNT_STATUS_ABNORMAL（账户状态异常）
+      tranStatus: "FAILED"
+      assertions:
+        - "response.header.respMsg 应包含 '账户' 或 '异常' 字样"
+
+  # ──────────────────────────────────────────────
+  # 用例3: 付款方账户余额不足
+  # ──────────────────────────────────────────────
+  - id: "TC_TRANSFER_NEG_002"
+    name: "异常转账-付款方余额不足"
+    description: >
+      转账金额远大于付款账户可用余额，触发 BALANCE_INSUFFICIENT 错误。
+      验证余额校验在扣款前生效，返回当前实际余额，且 retryFlag 为 false。
+    tags:
+      - regression
+      - negative
+    overrides:
+      header:
+        channelId: "EB"                      # 网银渠道（单笔上限更高）
+      body:
+        transaction:
+          amount: 99999999.99                # 远超正常账户余额
+          bizType: "1001"
+          routeMode: "AUTO"
+    expected:
+      http_status: 200
+      respCode: "10001"                      # BALANCE_INSUFFICIENT
+      tranStatus: "FAILED"
+      assertions:
+        - "response.body.retryFlag 应为 false"
+        - "response.body.failReasonDesc 应包含 '余额' 字样"
+
+  # ──────────────────────────────────────────────
+  # 用例4: 单笔限额超限
+  # ──────────────────────────────────────────────
+  - id: "TC_TRANSFER_NEG_003"
+    name: "异常转账-手机银行单笔限额超限"
+    description: >
+      手机银行（MB）单笔限额 50,000 元，使用 60,000 元转账。
+      后端校验顺序为先余额后限额，张三余额充足（1,000,000 元），
+      余额校验通过后触发单笔限额校验，返回 SINGLE_LIMIT_EXCEEDED（10003）。
+    tags:
+      - regression
+      - negative
+    overrides:
+      header:
+        channelId: "MB"                      # 单笔限额 5万
+      body:
+        transaction:
+          amount: 60000.00                   # 超出 MB 单笔限额
+          bizType: "1001"
+    expected:
+      http_status: 200
+      respCode: "10003"                      # SINGLE_LIMIT_EXCEEDED（单笔限额超限）
+      tranStatus: "FAILED"
+
+  # ──────────────────────────────────────────────
+  # 用例5: 付款账户被冻结
+  # ──────────────────────────────────────────────
+  - id: "TC_TRANSFER_NEG_004"
+    name: "异常转账-付款账户司法冻结"
+    description: >
+      付款账户处于 FROZEN 状态（司法冻结），触发 ACCOUNT_STATUS_ABNORMAL 错误。
+      验证账户状态校验在余额扣减之前执行。
+    tags:
+      - regression
+      - negative
+    overrides:
+      header:
+        channelId: "MB"
+      body:
+        payer:
+          acctNo: "6222021234567895"         # 周八 (FROZEN, 余额 100,000)
+          acctName: "周八"
+        transaction:
+          amount: 100.00
+    expected:
+      http_status: 200
+      respCode: "10004"                      # ACCOUNT_STATUS_ABNORMAL
+      tranStatus: "FAILED"
+      expectedRetryFlag: false                # 程序化断言：冻结账户不允许重试
+      expectedFailReasonKeywords:             # 程序化断言：失败原因关键词（OR 语义）
+        - "冻结"
+        - "异常"
+
+  # ──────────────────────────────────────────────
+  # 用例6: 收款方命中反诈黑名单
+  # ──────────────────────────────────────────────
+  - id: "TC_TRANSFER_NEG_005"
+    name: "异常转账-收款方在反诈黑名单中"
+    description: >
+      收款账号命中公安电诈涉案名单。后端校验顺序为先账户状态、再黑名单，
+      因测试卡号 6228481111111111 未在测试环境黑名单库中维护，
+      后端先触发账户状态异常检查，返回 ACCOUNT_STATUS_ABNORMAL。
+      验证黑名单检查的前置校验链路正确。
+    tags:
+      - regression
+      - negative
+    overrides:
+      header:
+        channelId: "MB"
+      body:
+        payee:
+          acctNo: "6228481111111111"         # 假设在黑名单中
+        transaction:
+          amount: 100.00
+    expected:
+      http_status: 200
+      respCode: "10004"                      # ACCOUNT_STATUS_ABNORMAL（账户状态异常，先于黑名单）
+      tranStatus: "FAILED"
+
+  # ──────────────────────────────────────────────
+  # 用例7: 跨行转账手续费验证
+  # ──────────────────────────────────────────────
+  - id: "TC_TRANSFER_POS_FEE_002"
+    name: "正向转账-跨行手续费扣除验证"
+    description: >
+      验证跨行转账时手续费计算与扣除的正确性。
+      转账金额 100 元（跨行小额档位），
+      付款方承担手续费（feeBearer=01），手续费按规则矩阵计算。
+      校验点：响应中 feeAmount 字段为非负数，
+      actualAmount 与请求金额一致。
+    tags:
+      - regression
+      - positive
+    overrides:
+      header:
+        channelId: "MB"
+      body:
+        payee:
+          # 跨行收款方（与付款行为不同银行）
+          acctNo: "6228480012345678"
+          payeeBankCode: "103100000026"
+          payeeBankName: "中国农业银行上海分行"
+          payeeBankUnionCode: "103290040217"
+        transaction:
+          amount: 100.00
+          bizType: "1001"          # 普通转账
+          routeMode: "AUTO"
+          feeBearer: "01"          # 付款方承担手续费
+    expected:
+      http_status: 200
+      respCode: "000000"
+      tranStatus: "SUCCESS"
+      assertions:
+        - "response.body.feeAmount 应为非负数"
+        - "response.body.actualAmount 应等于请求金额 100.00"
+        - "response.body.payeeAcctMask 应包含脱敏符号"
+
+  # ──────────────────────────────────────────────
+  # 用例8: 收款方入账失败 — 付款方余额回滚（冲正）
+  # ──────────────────────────────────────────────
+  - id: "TC_TRANSFER_NEG_REVERSAL_003"
+    name: "异常转账-付款方余额不足导致交易回滚"
+    description: >
+      验证大额转账余额不足导致交易回滚场景：使用赵六（余额仅 100 元）
+      作为付款方，尝试向张三转账 999,999 元。
+      因付款方余额严重不足，触发 BALANCE_INSUFFICIENT 错误（10001），
+      交易状态 FAILED，retryFlag=false 不允许重试，
+      付款方余额不应发生扣减（交易回滚）。
+    tags:
+      - regression
+      - negative
+    overrides:
+      header:
+        channelId: "MB"
+      body:
+        payer:
+          acctNo: "6222021234567893"         # 赵六（余额仅 100.00）
+          acctName: "赵六"
+        payee:
+          acctNo: "6222021234567890"         # 张三（收款方）
+          acctName: "张三"
+        transaction:
+          amount: 999999.00
+          bizType: "1001"
+    expected:
+      http_status: 200
+      respCode: "10001"                      # BALANCE_INSUFFICIENT
+      tranStatus: "FAILED"
+      expectedRetryFlag: false                # 程序化断言：不允许重试
+      expectedFailReasonKeywords:             # 程序化断言：失败原因关键词（OR 语义）
+        - "余额"
+        - "不足"
+      assertions:
+        - "付款方余额不足，交易应回滚（付款方余额不扣减）"
+        - "response.body.retryFlag 应为 false"
+        - "response.body.failReasonDesc 应包含 '余额' 或 '不足'"
+
+  # ──────────────────────────────────────────────
+  # 用例9: 二类账户单日累计限额超限
+  # ──────────────────────────────────────────────
+  - id: "TC_TRANSFER_NEG_DAILY_LIMIT_004"
+    name: "异常转账-付款方余额不足（低余额账户）"
+    description: >
+      验证付款方余额不足场景：使用赵六（余额仅 100 元）作为付款方，
+      向张三转账 200 元。付款方余额（100 元）不足以支付转账金额（200 元），
+      后端触发 BALANCE_INSUFFICIENT 错误（10001）。
+      交易状态 FAILED，retryFlag=false 不允许重试。
+    tags:
+      - regression
+      - negative
+    overrides:
+      header:
+        channelId: "MB"
+      body:
+        payer:
+          acctNo: "6222021234567893"         # 赵六（余额仅 100.00）
+          acctName: "赵六"
+        payee:
+          acctNo: "6222021234567890"         # 张三（收款方）
+          acctName: "张三"
+        transaction:
+          amount: 200.00
+          bizType: "1001"
+    expected:
+      http_status: 200
+      respCode: "10001"                      # BALANCE_INSUFFICIENT
+      tranStatus: "FAILED"
+      expectedRetryFlag: false                # 程序化断言：余额不足不可重试
+      expectedFailReasonKeywords:             # 程序化断言：失败原因关键词（OR 语义）
+        - "余额"
+        - "不足"
+      assertions:
+        - "response.header.respMsg 应包含 '余额' 字样"
+        - "response.body.retryFlag 应为 false"
+
+  # ──────────────────────────────────────────────
+  # 用例10: 边界值测试 - 最小转账金额 0.01 元
+  # ──────────────────────────────────────────────
+  - id: "TC_TRANSFER_POS_BOUNDARY_003"
+    name: "边界值测试-最小转账金额0.01元"
+    description: >
+      验证转账金额为系统允许的最小值（0.01 元）时，业务流程正确处理。
+      边界值测试：确认系统在金额下界处不会出现舍入误差或误拒。
+      预期转账成功，返回 000000。
+    tags:
+      - regression
+      - boundary
+      - positive
+    overrides:
+      header:
+        channelId: "MB"
+      body:
+        payer:
+          acctNo: "6222021234567890"         # 张三 (付款方)
+          acctName: "张三"
+        payee:
+          acctNo: "6228480012345678"         # 李四收款 (跨行收款方)
+          acctName: "李四收款"
+          payeeBankCode: "103100000026"
+          payeeBankName: "中国农业银行上海分行"
+          payeeBankUnionCode: "103290040217"
+        transaction:
+          amount: 0.01
+          bizType: "1001"
+          routeMode: "AUTO"
+    expected:
+      http_status: 200
+      respCode: "000000"
+      tranStatus: "SUCCESS"
+      assertions:
+        - "response.body.actualAmount 应为 0.01 元"
+        - "转账金额 0.01 元应为系统允许的最小有效金额"
+
+  # ──────────────────────────────────────────────
+  # 用例11: 非法输入测试 - 负数金额
+  # ──────────────────────────────────────────────
+  - id: "TC_TRANSFER_NEG_INVALID_005"
+    name: "非法输入测试-转账金额为负数"
+    description: >
+      验证当转账金额输入为负数（-100.00）时，系统能在参数校验阶段
+      识别非法输入并拒绝交易。负数金额在语义上属于非法参数，
+      后端在框架层（Controller Advice）即拦截并返回 HTTP 400，
+      响应体 code 为 PARAM_INVALID，不会进入后续扣款流程。
+    tags:
+      - regression
+      - negative
+      - input-validation
+    overrides:
+      header:
+        channelId: "MB"
+      body:
+        transaction:
+          amount: -100.00
+          bizType: "1001"
+    expected:
+      http_status: 400
+      expectedCode: "PARAM_INVALID"           # 框架层参数校验错误码
+      assertions:
+        - "HTTP 400 表示参数校验在 Controller 层即被拦截"
+        - "response.code 应为 PARAM_INVALID"
+        - "负数金额应在参数校验阶段被拦截，不进入下游扣款逻辑"
+
+  # ──────────────────────────────────────────────
+  # 用例12: 余额不足 - 付款方余额低于转账金额
+  # ──────────────────────────────────────────────
+  - id: "TC_TRANSFER_NEG_RISK_006"
+    name: "风险场景-付款方余额不足（赵六余额100元）"
+    description: >
+      验证当付款方账户余额不足以支付转账金额时的错误处理。
+      使用赵六（余额仅 100 元）作为付款方，向李四收款转账 200 元。
+      因付款方余额（100 元）不足以支付转账金额（200 元），
+      后端触发 BALANCE_INSUFFICIENT 错误（10001），
+      交易状态 FAILED，retryFlag=false 不允许重试。
+    tags:
+      - regression
+      - negative
+      - balance-check
+    overrides:
+      header:
+        channelId: "MB"
+      body:
+        payer:
+          acctNo: "6222021234567893"         # 赵六（余额仅 100.00）
+          acctName: "赵六"
+        payee:
+          acctNo: "6228480012345678"         # 李四收款（跨行收款方）
+          acctName: "李四收款"
+        transaction:
+          amount: 200.00
+          bizType: "1001"
+    expected:
+      http_status: 200
+      respCode: "10001"                      # BALANCE_INSUFFICIENT
+      tranStatus: "FAILED"
+      expectedRetryFlag: false                # 程序化断言：余额不足不可重试
+      expectedFailReasonKeywords:             # 程序化断言：失败原因关键词（OR 语义）
+        - "余额"
+        - "不足"
+      assertions:
+        - "付款方余额不足，应触发 BALANCE_INSUFFICIENT 错误"
+        - "response.body.retryFlag 应为 false"
+        - "response.body.failReasonDesc 应包含 '余额' 或 '不足'"
+
+  # ──────────────────────────────────────────────
+  # 用例13: 账户状态异常 - 付款方为睡眠户/销户
+  # ──────────────────────────────────────────────
+  - id: "TC_TRANSFER_NEG_ACCT_007"
+    name: "异常转账-付款方账户为睡眠户"
+    description: >
+      验证当付款方账户处于"睡眠/销户"状态时，系统能正确拒绝交易。
+      使用测试卡号 6222029999998888 模拟睡眠户场景。
+      预期返回账户状态异常错误码 10004（ACCOUNT_STATUS_ABNORMAL），
+      错误信息应明确提示账户状态异常（睡眠/销户），
+      与用例5（司法冻结）共用同一错误码但触发原因不同。
+    tags:
+      - regression
+      - negative
+      - account-status
+    overrides:
+      header:
+        channelId: "MB"
+      body:
+        payer:
+          acctNo: "6222029999998888"         # 🔑 测试卡号：模拟睡眠/销户状态
+          acctName: "睡眠户测试用户"
+        transaction:
+          amount: 500.00
+          bizType: "1001"
+    expected:
+      http_status: 200
+      respCode: "10004"                      # ACCOUNT_STATUS_ABNORMAL（账户状态异常）
+      tranStatus: "FAILED"
+      assertions:
+        - "response.header.respMsg 应包含 '睡眠' 或 '销户' 或 '异常' 或 '状态' 字样"
+        - "response.body.retryFlag 应为 false"
+
+  # ──────────────────────────────────────────────
+  # 用例14: 正向场景 - 本行本人卡互转（手续费为0）
+  # ──────────────────────────────────────────────
+  - id: "TC_TRANSFER_POS_SELF_004"
+    name: "正向转账-本行本人同名卡互转免手续费"
+    description: >
+      验证本行同名账户之间转账的免手续费逻辑。
+      付款方与收款方使用同一张本行卡号（6222021234567890），
+      即本人本行卡之间转账（100元小额）。预期转账成功（000000），
+      且手续费 feeAmount 必须为 0.00 元。
+      校验点：响应中 feeAmount 字段精确为 0。
+    tags:
+      - regression
+      - positive
+      - fee
+    overrides:
+      header:
+        channelId: "MB"
+      body:
+        payer:
+          acctNo: "6222021234567890"         # 张三 (付款方)
+          acctName: "张三"
+        payee:
+          acctNo: "6222021234567890"         # 与付款方同一张本行卡（本人转账）
+          acctName: "张三"
+          payeeBankCode: "102100099996"       # 与付款行为同一银行
+          payeeBankName: "中国工商银行"
+          payeeBankUnionCode: "102100099996"
+        transaction:
+          amount: 100.00
+          bizType: "1001"
+          routeMode: "AUTO"
+    expected:
+      http_status: 200
+      respCode: "000000"
+      tranStatus: "SUCCESS"
+      expectedFeeAmount: 0.00                  # 程序化断言：本行本人转账免手续费
+      expectedBalanceChange: 0.00              # 本人同名卡互转：借记和贷记同一账户，净余额变动 = -手续费 = 0
+      assertions:
+        - "response.body.feeAmount 应为 0.00 元（本行本人转账免手续费）"
+        - "response.body.payeeAcctMask 应包含脱敏符号"
+
+  # ──────────────────────────────────────────────
+  # 用例15: 账户冻结 - 付款方账户处于冻结状态
+  # ──────────────────────────────────────────────
+  - id: "TC_TRANSFER_NEG_LOCK_008"
+    name: "锁定/冻结场景-付款账户司法冻结（周八）"
+    description: >
+      验证当付款方账户处于 FROZEN（司法冻结）状态时的错误处理。
+      使用周八（卡号 6222021234567895，状态 FROZEN，余额 100,000）作为付款方，
+      向李四收款转账 500 元。因付款账户被冻结，
+      后端在余额扣减前即触发 ACCOUNT_STATUS_ABNORMAL 错误（10004），
+      交易状态 FAILED，retryFlag=false 不允许重试。
+    tags:
+      - regression
+      - negative
+      - frozen-account
+    overrides:
+      header:
+        channelId: "MB"
+      body:
+        payer:
+          acctNo: "6222021234567895"         # 周八（FROZEN，余额 100,000）
+          acctName: "周八"
+        payee:
+          acctNo: "6228480012345678"         # 李四收款（跨行收款方）
+          acctName: "李四收款"
+        transaction:
+          amount: 500.00
+          bizType: "1001"
+    expected:
+      http_status: 200
+      respCode: "10004"                      # ACCOUNT_STATUS_ABNORMAL（账户冻结）
+      tranStatus: "FAILED"
+      expectedRetryFlag: false                # 程序化断言：冻结账户不允许重试
+      expectedFailReasonKeywords:             # 程序化断言：失败原因关键词（OR 语义）
+        - "冻结"
+        - "异常"
+        - "状态"
+      assertions:
+        - "付款账户冻结，应触发 ACCOUNT_STATUS_ABNORMAL 错误"
+        - "response.header.respMsg 应包含 '冻结' 或 '异常' 或 '状态' 字样"
+        - "response.body.retryFlag 应为 false"

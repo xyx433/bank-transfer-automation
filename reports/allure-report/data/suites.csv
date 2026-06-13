@@ -1,0 +1,9 @@
+"DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
+"这是一个临时验证用例。
+
+使用故意构造的异常参数（不存在的收款账号 + 超大金额）发送转账请求，
+然后故意触发断言失败，以验证 Allure 报告中的以下附件是否正确挂载:
+
+- 🔴 请求报文 (应包含 9999999999999999 和 999999.99)
+- 🟢 响应报文 (应包含后端返回的错误码/错误信息)
+- ⏱️ 耗时 (应显示实际接口响应耗时)","42","🔍 验证Allure失败诊断: 错误收款人 + 超大金额","testcases","2026-06-13","failed","2026-06-13","","test_verify_allure_attachments","",""

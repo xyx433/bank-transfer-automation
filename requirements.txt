@@ -1,0 +1,14 @@
+# 测试核心框架
+
+pytest>=8.0.0
+requests>=2.31.0
+
+# 数据驱动
+PyYAML>=6.0
+pymysql>=1.1.0
+
+# 报告（可选）
+allure-pytest>=2.13.0
+
+# 断言增强（可选）
+pytest-check>=2.0.0

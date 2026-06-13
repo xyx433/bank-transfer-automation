@@ -1,0 +1,28 @@
+{
+  "code": "10001",
+  "message": "付款账户余额不足",
+  "data": {
+    "header": {
+      "tranSeqNo": "20260613PITMB93658619",
+      "respTime": "2026-06-13T16:10:20.651741500",
+      "version": "1.0.0",
+      "respCode": "10001",
+      "respMsg": "付款账户余额不足"
+    },
+    "body": {
+      "tranStatus": "FAILED",
+      "acpTranSeqNo": null,
+      "coreSerialNo": null,
+      "hostSeqNo": null,
+      "hostStatus": null,
+      "payeeAcctMask": null,
+      "actualAmount": null,
+      "feeAmount": null,
+      "completedTime": null,
+      "failReasonCode": "10001",
+      "failReasonDesc": "账户可用余额不足，当前可用余额：774235.82，需扣减：1000049.99",
+      "retryFlag": false
+    }
+  },
+  "success": false
+}

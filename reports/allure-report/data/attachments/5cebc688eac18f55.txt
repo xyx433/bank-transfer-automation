@@ -1,0 +1,6 @@
+测试用例: testcases/test_verify_allure_attachments.py::test_verify_allure_failure_attachments
+响应状态码: 200
+接口耗时: 0.039s
+数据库快照数: 0
+
+💡 提示: 请结合以上 Request / Response / DB Snapshot 附件进行故障定位。
