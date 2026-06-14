@@ -48,8 +48,8 @@ test_cases:
                     latitude: "<location:信阳>"
     expected:
         http_status: 200
-        respCode: '10002'
-        tranStatus: FAILED
+        respCode: "10002"
+        tranStatus: "FAILED"
         expectedFailReasonKeywords: ["单日累计", "限额"]
   - id: "TC_TRANSFER_NEG_001"
     name: "异常转账-收款方账号不存在"
@@ -74,8 +74,8 @@ test_cases:
                 amount: 1000.00
     expected:
         http_status: 200
-        respCode: '10002'
-        tranStatus: FAILED
+        respCode: "10002"
+        tranStatus: "FAILED"
         expectedFailReasonKeywords: ["单日累计", "限额"]
   - id: "TC_TRANSFER_NEG_002"
     name: "异常转账-付款方余额不足"
@@ -189,8 +189,8 @@ test_cases:
                 amount: 100.00
     expected:
         http_status: 200
-        respCode: '10002'
-        tranStatus: FAILED
+        respCode: "10002"
+        tranStatus: "FAILED"
         expectedFailReasonKeywords: ["单日累计", "限额"]
   - id: "TC_TRANSFER_POS_FEE_002"
     name: "正向转账-跨行手续费扣除验证"
@@ -226,8 +226,8 @@ test_cases:
                     latitude: "<location:信阳>"
     expected:
         http_status: 200
-        respCode: '10002'
-        tranStatus: FAILED
+        respCode: "10002"
+        tranStatus: "FAILED"
         expectedFailReasonKeywords: ["单日累计", "限额"]
   - id: "TC_TRANSFER_NEG_REVERSAL_003"
     name: "异常转账-付款方余额不足导致交易回滚"
@@ -491,8 +491,8 @@ test_cases:
                 routeMode: "AUTO"
     expected:
         http_status: 200
-        respCode: '10002'
-        tranStatus: FAILED
+        respCode: "10002"
+        tranStatus: "FAILED"
         expectedFailReasonKeywords: ["单日累计", "限额"]
   - id: "TC_TRANSFER_NEG_LOCK_008"
     name: "锁定/冻结场景-付款账户司法冻结（周八）"
@@ -587,8 +587,8 @@ test_cases:
                 bizType: "1001"
     expected:
         http_status: 200
-        respCode: '10002'
-        tranStatus: FAILED
+        respCode: "10002"
+        tranStatus: "FAILED"
         expectedFailReasonKeywords: ["单日累计", "限额"]
   - id: "TC_Transfer_021"
     name: "业务类型-实时转账单笔限额降为50%"
@@ -614,9 +614,7 @@ test_cases:
         http_status: 200
         respCode: "10002"
         tranStatus: "FAILED"
-        expectedFailReasonKeywords:
-          - "单日累计"
-          - "限额"
+        expectedFailReasonKeywords: ["单日累计", "限额"]
 
   - id: "TC_Transfer_022"
     name: "渠道限额-微信小程序+实时转账叠加限额"
@@ -641,8 +639,8 @@ test_cases:
                 bizType: "1002"
     expected:
         http_status: 200
-        respCode: '10002'
-        tranStatus: FAILED
+        respCode: "10002"
+        tranStatus: "FAILED"
         expectedFailReasonKeywords: ["单日累计", "限额"]
   - id: "TC_Transfer_023"
     name: "渠道限额-网上银行单笔限额超限"
@@ -829,8 +827,8 @@ test_cases:
                 routeMode: "AUTO"
     expected:
         http_status: 200
-        respCode: '10002'
-        tranStatus: FAILED
+        respCode: "10002"
+        tranStatus: "FAILED"
         expectedFailReasonKeywords: ["单日累计", "限额"]
   - id: "TC_Transfer_029"
     name: "账户状态-收款冻结账户禁止入账"
@@ -862,8 +860,8 @@ test_cases:
                 bizType: "1001"
     expected:
         http_status: 200
-        respCode: '10002'
-        tranStatus: FAILED
+        respCode: "10002"
+        tranStatus: "FAILED"
         expectedFailReasonKeywords: ["单日累计", "限额"]
   - id: "TC_Transfer_030"
     name: "安全认证-交易密码SM4验密失败"
@@ -887,8 +885,8 @@ test_cases:
                 tradePwdEnc: "InvalidSm4EncryptedBase64StringXXXX"
     expected:
         http_status: 200
-        respCode: '10002'
-        tranStatus: FAILED
+        respCode: "10002"
+        tranStatus: "FAILED"
         expectedFailReasonKeywords: ["单日累计", "限额"]
   - id: "TC_Transfer_031"
     name: "安全认证-短信验证码错误"
@@ -912,8 +910,8 @@ test_cases:
                 smsCode: "000000"
     expected:
         http_status: 200
-        respCode: '10002'
-        tranStatus: FAILED
+        respCode: "10002"
+        tranStatus: "FAILED"
         expectedFailReasonKeywords: ["单日累计", "限额"]
   - id: "TC_Transfer_032"
     name: "安全认证-大额转账缺faceToken强制拦截"
@@ -939,8 +937,8 @@ test_cases:
                 faceToken:
     expected:
         http_status: 200
-        respCode: '10002'
-        tranStatus: FAILED
+        respCode: "10002"
+        tranStatus: "FAILED"
         expectedFailReasonKeywords: ["单日累计", "限额"]
   - id: "TC_Transfer_033"
     name: "安全认证-人脸Token无效或已过期"
@@ -991,8 +989,8 @@ test_cases:
         signature: "TamperedInvalidSignatureBase64StringXXX"
     expected:
         http_status: 200
-        respCode: '10002'
-        tranStatus: FAILED
+        respCode: "10002"
+        tranStatus: "FAILED"
         expectedFailReasonKeywords: ["单日累计", "限额"]
   - id: "TC_Transfer_035"
     name: "安全认证-非可信设备加大额交易强制人脸"
@@ -1018,8 +1016,8 @@ test_cases:
                 faceToken:
     expected:
         http_status: 200
-        respCode: '10002'
-        tranStatus: FAILED
+        respCode: "10002"
+        tranStatus: "FAILED"
         expectedFailReasonKeywords: ["单日累计", "限额"]
   - id: "TC_Transfer_036"
     name: "防重放-nonce时间戳偏差超过300秒"
@@ -1047,8 +1045,8 @@ test_cases:
                 nonce: "<time_offset:-301>_replayed"
     expected:
         http_status: 200
-        respCode: '10002'
-        tranStatus: FAILED
+        respCode: "10002"
+        tranStatus: "FAILED"
         expectedFailReasonKeywords: ["单日累计", "限额"]
   - id: "TC_Transfer_037"
     name: "防重放-重复nonce触发重放攻击检测"
@@ -1075,8 +1073,8 @@ test_cases:
                 nonce: "<fixed:1734329400_duplicate_nonce_001>"
     expected:
         http_status: 200
-        respCode: '10002'
-        tranStatus: FAILED
+        respCode: "10002"
+        tranStatus: "FAILED"
         expectedFailReasonKeywords: ["单日累计", "限额"]
   - id: "TC_Transfer_038"
     name: "清算路由-强制指定HVPS非工作时间拒绝"
@@ -1101,8 +1099,8 @@ test_cases:
                 routeMode: "HVPS"
     expected:
         http_status: 200
-        respCode: '10002'
-        tranStatus: FAILED
+        respCode: "10002"
+        tranStatus: "FAILED"
         expectedFailReasonKeywords: ["单日累计", "限额"]
   - id: "TC_Transfer_039"
     name: "清算路由-强制指定IBPS金额超5万拦截"
@@ -1171,9 +1169,7 @@ test_cases:
         http_status: 200
         respCode: "10002"
         tranStatus: "FAILED"
-        expectedFailReasonKeywords:
-          - "单日累计"
-          - "限额"
+        expectedFailReasonKeywords: ["单日累计", "限额"]
 
   # ═══════════════════════════════════════════════════════════
   # 补充用例 — 收款方信息校验（P1）
@@ -1206,8 +1202,8 @@ test_cases:
                 bizType: "1001"
     expected:
         http_status: 200
-        respCode: '10002'
-        tranStatus: FAILED
+        respCode: "10002"
+        tranStatus: "FAILED"
         expectedFailReasonKeywords: ["单日累计", "限额"]
   - id: "TC_Transfer_042"
     name: "收款校验-支付系统行号UnionCode无效"
@@ -1232,8 +1228,8 @@ test_cases:
                 bizType: "1001"
     expected:
         http_status: 200
-        respCode: '10002'
-        tranStatus: FAILED
+        respCode: "10002"
+        tranStatus: "FAILED"
         expectedFailReasonKeywords: ["单日累计", "限额"]
   - id: "TC_Transfer_043"
     name: "收款校验-贷记卡入金触发额外风控"
@@ -1266,8 +1262,8 @@ test_cases:
                 bizType: "1001"
     expected:
         http_status: 200
-        respCode: '10002'
-        tranStatus: FAILED
+        respCode: "10002"
+        tranStatus: "FAILED"
         expectedFailReasonKeywords: ["单日累计", "限额"]
   - id: "TC_Transfer_044"
     name: "手续费-余额刚好覆盖本金但不足覆盖手续费"
@@ -1423,8 +1419,8 @@ test_cases:
                     latitude: "<location:信阳>"
     expected:
         http_status: 200
-        respCode: '10002'
-        tranStatus: FAILED
+        respCode: "10002"
+        tranStatus: "FAILED"
         expectedFailReasonKeywords: ["单日累计", "限额"]
   - id: "TC_Transfer_048"
     name: "AML-单笔大额触发反洗钱可疑交易"
@@ -1455,9 +1451,7 @@ test_cases:
         http_status: 200
         respCode: "10002"
         tranStatus: "FAILED"
-        expectedFailReasonKeywords:
-          - "单日累计"
-          - "限额"
+        expectedFailReasonKeywords: ["单日累计", "限额"]
 
   - id: "TC_Transfer_049"
     name: "AML-GPS坐标与常用地偏差超500公里拦截"
@@ -1485,8 +1479,8 @@ test_cases:
                     latitude: "23.1291"
     expected:
         http_status: 200
-        respCode: '10002'
-        tranStatus: FAILED
+        respCode: "10002"
+        tranStatus: "FAILED"
         expectedFailReasonKeywords: ["单日累计", "限额"]
   - id: "TC_Transfer_050"
     name: "合规-附言命中敏感词拦截"
@@ -1510,8 +1504,8 @@ test_cases:
                 remitInfo: "虚拟币USDT购买"
     expected:
         http_status: 200
-        respCode: '10002'
-        tranStatus: FAILED
+        respCode: "10002"
+        tranStatus: "FAILED"
         expectedFailReasonKeywords: ["单日累计", "限额"]
   - id: "TC_Transfer_051"
     name: "合规-附言纯数字拦截"
@@ -1536,8 +1530,8 @@ test_cases:
                 remitInfo: "1234567890"
     expected:
         http_status: 200
-        respCode: '10002'
-        tranStatus: FAILED
+        respCode: "10002"
+        tranStatus: "FAILED"
         expectedFailReasonKeywords: ["单日累计", "限额"]
   - id: "TC_Transfer_052"
     name: "合规-附言XSS脚本注入防护"
@@ -1561,8 +1555,8 @@ test_cases:
                 remitInfo: "货款<script>alert(1)</script>"
     expected:
         http_status: 200
-        respCode: '10002'
-        tranStatus: FAILED
+        respCode: "10002"
+        tranStatus: "FAILED"
         expectedFailReasonKeywords: ["单日累计", "限额"]
   - id: "TC_Transfer_053"
     name: "合规-附言SQL注入关键字防护"
@@ -1586,8 +1580,8 @@ test_cases:
                 remitInfo: "test'; DROP TABLE account; --"
     expected:
         http_status: 200
-        respCode: '10002'
-        tranStatus: FAILED
+        respCode: "10002"
+        tranStatus: "FAILED"
         expectedFailReasonKeywords: ["单日累计", "限额"]
   - id: "TC_Transfer_054"
     name: "合规-附言超长字符拦截"
@@ -1611,8 +1605,8 @@ test_cases:
                 remitInfo: "这是一个超长的交易附言用于测试系统对附言长度限制的校验能力这是一个超长的交易附言用于测试系统对附言长度限制的校验能力这是一"
     expected:
         http_status: 200
-        respCode: '10002'
-        tranStatus: FAILED
+        respCode: "10002"
+        tranStatus: "FAILED"
         expectedFailReasonKeywords: ["单日累计", "限额"]
   - id: "TC_Transfer_055"
     name: "反欺诈-收款账户在观察名单限额降级"
@@ -1645,8 +1639,8 @@ test_cases:
                 bizType: "1001"
     expected:
         http_status: 200
-        respCode: '10002'
-        tranStatus: FAILED
+        respCode: "10002"
+        tranStatus: "FAILED"
         expectedFailReasonKeywords: ["单日累计", "限额"]
   - id: "TC_Transfer_056"
     name: "边界值-转账金额等于单笔限额精确值"
@@ -1686,9 +1680,7 @@ test_cases:
         http_status: 200
         respCode: "10002"
         tranStatus: "FAILED"
-        expectedFailReasonKeywords:
-          - "单日累计"
-          - "限额"
+        expectedFailReasonKeywords: ["单日累计", "限额"]
 
   - id: "TC_Transfer_057"
     name: "边界值-转账金额0元无效输入"
