@@ -1,6 +1,6 @@
 #  bank-transfer-automation
 [![Bank Transfer CI/CD](https://github.com/xyx433/bank-transfer-automation/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/xyx433/bank-transfer-automation/actions/workflows/ci-cd.yml)
-
+📦 后端源码：本项目的核心 Java 后端代码已独立开源，欢迎查阅：[你的 Java 仓库链接]
 ## 🚀 项目简介
 这是一个基于 Python 的银行转账自动化测试/模拟项目。主要实现了账户管理、资金流转以及异常场景（如余额不足、并发冲突）的自动化验证。
 
