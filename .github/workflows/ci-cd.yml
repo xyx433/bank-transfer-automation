@@ -30,13 +30,14 @@ jobs:
           repository: xyx433/bank-transfer-java
           path: java-backend
           token: ${{ secrets.JAVA_REPO_TOKEN }}
-      # 4. 构建并运行 Java 后端 Docker 容器 (修复缩进版)
+
+      # 4. 构建并运行 Java 后端 Docker 容器
       - name: Build and Run Backend
         run: |
           # 1. 构建镜像
           docker build -t bank-backend ./java-backend
 
-          # 2. 运行容器 (修复了缩进和反斜杠)
+          # 2. 运行容器
           sh -c '
           docker run -d \
             --name my-bank-app \
@@ -50,9 +51,8 @@ jobs:
       - name: Wait for Backend to Start
         run: |
           echo "Waiting for server on port 8080..."
-          # 安装 netcat (如果未预装)
           sudo apt-get update && sudo apt-get install -y netcat-openbsd || true
-          
+
           for i in $(seq 1 24); do
             if nc -z localhost 8080; then
               echo "Server is UP!"
@@ -74,13 +74,28 @@ jobs:
         run: |
           pip install -r requirements.txt
           pip install pymysql requests pytest
+          # 【新增】安装 Allure 插件
+          pip install allure-pytest
 
       - name: Initialize Test Database
         run: |
           mysql -h127.0.0.1 -uroot -p${{ secrets.DB_PASSWORD }} ${{ secrets.DB_NAME }} < sql/reset_test_accounts.sql
 
-      - name: Run Tests
-        run: pytest testcases/ -v
+      # 【修改】运行测试并生成 Allure 原始数据
+      - name: Run Tests with Allure
+        run: |
+          # 创建存放结果的目录
+          mkdir -p allure-results
+          # 运行 pytest，指定结果输出目录
+          pytest testcases/ -v --alluredir=./allure-results
+
+      # 【新增】上传 Allure 报告作为 Artifact
+      - name: Upload Allure Report
+        if: always() # 即使测试失败也上传报告，方便排查
+        uses: actions/upload-artifact@v3
+        with:
+          name: allure-report-data
+          path: allure-results/
 
       - name: Cleanup
         if: always()
