@@ -30,13 +30,11 @@ jobs:
           repository: xyx433/bank-transfer-java
           path: java-backend
           token: ${{ secrets.JAVA_REPO_TOKEN }}
-      # 4. 构建并运行 Java 后端 Docker 容器 (修复缩进版)
+
+      # 构建并运行 Java 后端 Docker 容器
       - name: Build and Run Backend
         run: |
-          # 1. 构建镜像
           docker build -t bank-backend ./java-backend
-
-          # 2. 运行容器 (修复了缩进和反斜杠)
           sh -c '
           docker run -d \
             --name my-bank-app \
@@ -50,7 +48,6 @@ jobs:
       - name: Wait for Backend to Start
         run: |
           echo "Waiting for server on port 8080..."
-          # 安装 netcat (如果未预装)
           sudo apt-get update && sudo apt-get install -y netcat-openbsd || true
           
           for i in $(seq 1 24); do
@@ -73,14 +70,22 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
-          pip install pymysql requests pytest
+          pip install pymysql requests pytest allure-pytest
 
       - name: Initialize Test Database
         run: |
           mysql -h127.0.0.1 -uroot -p${{ secrets.DB_PASSWORD }} ${{ secrets.DB_NAME }} < sql/reset_test_accounts.sql
 
-      - name: Run Tests
-        run: pytest testcases/ -v
+      - name: Run Tests with Allure
+        run: pytest testcases/ -v --alluredir=allure-results
+
+      # 【关键修改】这里将 v3 改为了 v4
+      - name: Upload Allure Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-report
+          path: allure-results/
 
       - name: Cleanup
         if: always()
