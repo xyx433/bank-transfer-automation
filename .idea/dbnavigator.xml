@@ -100,9 +100,7 @@ DESCRIBE account;]]></console>
     <last-used-providers />
   </component>
   <component name="DBNavigator.Project.DatabaseFileManager">
-    <open-files>
-      <object connection-id="dc73f0d2-2909-42a1-94d4-fbbfcde6ec60" object-ref="consoles/bank" />
-    </open-files>
+    <open-files />
   </component>
   <component name="DBNavigator.Project.DatabasePrerequisiteManager">
     <prerequisites />
@@ -115,6 +113,9 @@ DESCRIBE account;]]></console>
   </component>
   <component name="DBNavigator.Project.ExecutionManager">
     <retain-sticky-names value="false" />
+  </component>
+  <component name="DBNavigator.Project.FileConnectionMappingManager">
+    <mapping file-url="file://$PROJECT_DIR$/sql/reset_test_accounts.sql" connection-id="dc73f0d2-2909-42a1-94d4-fbbfcde6ec60" session-id="MAIN" current-schema="bank_core" />
   </component>
   <component name="DBNavigator.Project.ObjectQuickFilterManager">
     <last-used-operator value="EQUAL" />
