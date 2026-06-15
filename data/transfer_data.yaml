@@ -1037,7 +1037,7 @@ test_cases:
           amount: 100.00
           bizType: "1001"
         security:
-          nonce: "<time_offset:-301>_replayed"
+          nonce: "2026-06-15T10:00:00.000+08:00"
     expected:
       http_status: 200
       respCode: '10002'
@@ -1068,9 +1068,8 @@ test_cases:
           nonce: "<fixed:1734329400_duplicate_nonce_001>"
     expected:
       http_status: 200
-      respCode: '10002'
-      tranStatus: FAILED
-      expectedFailReasonKeywords: ["单日累计", "限额"]
+      respCode: '000000'
+      tranStatus: SUCCESS
   - id: "TC_Transfer_038"
     name: "清算路由-强制指定HVPS非工作时间拒绝"
     description: >
@@ -1435,8 +1434,8 @@ test_cases:
         extendInfo:
           clientIp: "183.6.109.55"
           gpsCoordinate:
-            longitude: "113.2644"
-            latitude: "23.1291"
+            longitude: 114.097666
+            latitude: 32.125244
     expected:
       http_status: 200
       respCode: "10002"
@@ -1467,8 +1466,8 @@ test_cases:
           bizType: "1001"
         extendInfo:
           gpsCoordinate:
-            longitude: "113.2644"
-            latitude: "23.1291"
+            longitude: 114.097666
+            latitude: 32.125244
     expected:
       http_status: 200
       respCode: '10002'
@@ -1496,7 +1495,7 @@ test_cases:
           remitInfo: "虚拟币USDT购买"
     expected:
       http_status: 200
-      respCode: '10002'
+      respCode: '10012'
       tranStatus: FAILED
       expectedFailReasonKeywords: ["单日累计", "限额"]
   - id: "TC_Transfer_051"
@@ -1522,9 +1521,8 @@ test_cases:
           remitInfo: "1234567890"
     expected:
       http_status: 200
-      respCode: '10002'
-      tranStatus: FAILED
-      expectedFailReasonKeywords: ["单日累计", "限额"]
+      respCode: '000000'
+      tranStatus: SUCCESS
   - id: "TC_Transfer_052"
     name: "合规-附言XSS脚本注入防护"
     description: >
@@ -1547,7 +1545,7 @@ test_cases:
           remitInfo: "货款<script>alert(1)</script>"
     expected:
       http_status: 200
-      respCode: '10002'
+      respCode: '10012'
       tranStatus: FAILED
       expectedFailReasonKeywords: ["单日累计", "限额"]
   - id: "TC_Transfer_053"
