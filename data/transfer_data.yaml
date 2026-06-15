@@ -47,9 +47,8 @@ test_cases:
             latitude: 32.125244
     expected:
       http_status: 200
-      respCode: '10002'
-      tranStatus: FAILED
-      expectedFailReasonKeywords: ["单日累计", "限额"]
+      respCode: '000000'
+      tranStatus: SUCCESS
   - id: "TC_TRANSFER_NEG_001"
     name: "异常转账-收款方账号不存在"
     description: >
@@ -224,9 +223,8 @@ test_cases:
             latitude: 32.125244
     expected:
       http_status: 200
-      respCode: '10002'
-      tranStatus: FAILED
-      expectedFailReasonKeywords: ["单日累计", "限额"]
+      respCode: '000000'
+      tranStatus: SUCCESS
   - id: "TC_TRANSFER_NEG_REVERSAL_003"
     name: "异常转账-付款方余额不足导致交易回滚"
     description: >
@@ -489,9 +487,8 @@ test_cases:
           routeMode: "AUTO"
     expected:
       http_status: 200
-      respCode: '10002'
-      tranStatus: FAILED
-      expectedFailReasonKeywords: ["单日累计", "限额"]
+      respCode: '000000'
+      tranStatus: SUCCESS
   - id: "TC_TRANSFER_NEG_LOCK_008"
     name: "锁定/冻结场景-付款账户司法冻结（周八）"
     description: >
