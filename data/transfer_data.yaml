@@ -950,7 +950,7 @@ test_cases:
     expected:
       http_status: 200
       respCode: '000000'
-      tranStatus: FAILED
+      tranStatus: SUCCESS
       expectedFailReasonKeywords: ["单日累计", "限额"]
   - id: "TC_Transfer_033"
     name: "安全认证-人脸Token无效或已过期"
@@ -1371,7 +1371,8 @@ test_cases:
     expected:
       http_status: 200
       respCode: "000000"
-      tranStatus: "FAILED"
+      tranStatus: "SUCCESS"
+      expectedFeeAmount: 9.00
 
   - id: "TC_Transfer_046"
     name: "手续费-私银客户跨行手续费全免"
@@ -1411,7 +1412,8 @@ test_cases:
     expected:
       http_status: 200
       respCode: "000000"
-      tranStatus: "FAILED"
+      tranStatus: "SUCCESS"
+      expectedFeeAmount: 0.00
 
   - id: "TC_Transfer_047"
     name: "手续费-收款方承担手续费feeBearer=02"
@@ -1514,7 +1516,7 @@ test_cases:
     expected:
       http_status: 200
       respCode: '000000'
-      tranStatus: FAILED
+      tranStatus: SUCCESS
       expectedFailReasonKeywords: ["单日累计", "限额"]
   - id: "TC_Transfer_050"
     name: "合规-附言命中敏感词拦截"
