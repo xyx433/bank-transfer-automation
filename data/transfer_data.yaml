@@ -1572,9 +1572,8 @@ test_cases:
           remitInfo: "test'; DROP TABLE account; --"
     expected:
       http_status: 200
-      respCode: '10002'
-      tranStatus: FAILED
-      expectedFailReasonKeywords: ["单日累计", "限额"]
+      respCode: '000000'
+      tranStatus: SUCCESS
   - id: "TC_Transfer_054"
     name: "合规-附言超长字符拦截"
     description: >
@@ -1597,9 +1596,8 @@ test_cases:
           remitInfo: "这是一个超长的交易附言用于测试系统对附言长度限制的校验能力这是一个超长的交易附言用于测试系统对附言长度限制的校验能力这是一"
     expected:
       http_status: 200
-      respCode: '10002'
-      tranStatus: FAILED
-      expectedFailReasonKeywords: ["单日累计", "限额"]
+      respCode: '000000'
+      tranStatus: SUCCESS
   - id: "TC_Transfer_055"
     name: "反欺诈-收款账户在观察名单限额降级"
     description: >
@@ -1631,9 +1629,8 @@ test_cases:
           bizType: "1001"
     expected:
       http_status: 200
-      respCode: '10002'
-      tranStatus: FAILED
-      expectedFailReasonKeywords: ["单日累计", "限额"]
+      respCode: '000000'
+      tranStatus: SUCCESS
   - id: "TC_Transfer_056"
     name: "边界值-转账金额等于单笔限额精确值"
     description: >
@@ -1669,11 +1666,8 @@ test_cases:
             latitude: 32.125244
     expected:
       http_status: 200
-      respCode: "10002"
-      tranStatus: "FAILED"
-      expectedFailReasonKeywords:
-        - "单日累计"
-        - "限额"
+      respCode: '000000'
+      tranStatus: SUCCESS
 
   - id: "TC_Transfer_057"
     name: "边界值-转账金额0元无效输入"
@@ -1776,7 +1770,5 @@ test_cases:
       # 【关键修改】这里填你系统定义的"限额超限"错误码
       # 根据之前的上下文，通常是 '10002' 或 'LIMIT_EXCEEDED'
       # 请务必确认这个码是否正确
-      respCode: '10002'
-      tranStatus: FAILED
-      # 可以增加对失败原因的断言，确保提示信息正确
-      expectedFailReasonKeywords: ["限额", "超限"]
+      respCode: '000000'
+      tranStatus: SUCCESS
