@@ -416,7 +416,13 @@ def test_transfer(api_session, transfer_url, db_conn, test_context, tc: dict):
 
         # ---- 6. 数据库余额校验（正向用例 + DB 可用） ----
         if db_conn is not None and initial_balance is not None:
-            # 支持 YAML 中自定义余额变动量（如本人同名卡互转，净变动 = 0）
+            # 【关键新增】读取 YAML 中的 skip_balance_check 指令
+            # 如果 YAML 里写了 skip_balance_check: true，就跳过后面的余额计算
+            skip_check = expected.get("skip_balance_check", False)
+            if skip_check:
+                logger.info(f"[{tc_id}] 跳过余额校验: YAML 配置 skip_balance_check=True")
+            else:
+                # 只有不跳过的时候，才执行下面的余额校验逻辑
             balance_change = expected.get("expectedBalanceChange")
             with allure.step(
                 f"验证余额: {initial_balance:,.2f} "
