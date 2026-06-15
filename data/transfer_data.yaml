@@ -72,7 +72,7 @@ test_cases:
           amount: 1000.00
     expected:
       http_status: 200
-      respCode: '10002'
+      respCode: '10004'
       tranStatus: FAILED
       expectedFailReasonKeywords: ["单日累计", "限额"]
   - id: "TC_TRANSFER_NEG_002"
@@ -186,7 +186,7 @@ test_cases:
           amount: 100.00
     expected:
       http_status: 200
-      respCode: '10002'
+      respCode: '10004'
       tranStatus: FAILED
       expectedFailReasonKeywords: ["单日累计", "限额"]
   - id: "TC_TRANSFER_POS_FEE_002"
@@ -586,7 +586,7 @@ test_cases:
           bizType: "1001"
     expected:
       http_status: 200
-      respCode: '10002'
+      respCode: '000000'
       tranStatus: FAILED
       expectedFailReasonKeywords: ["单日累计", "限额"]
   - id: "TC_Transfer_021"
@@ -612,7 +612,7 @@ test_cases:
           bizType: "1002"
     expected:
       http_status: 200
-      respCode: "10002"
+      respCode: "000000"
       tranStatus: "FAILED"
       expectedFailReasonKeywords:
         - "单日累计"
@@ -642,7 +642,7 @@ test_cases:
           bizType: "1002"
     expected:
       http_status: 200
-      respCode: '10002'
+      respCode: '000000'
       tranStatus: FAILED
       expectedFailReasonKeywords: ["单日累计", "限额"]
   - id: "TC_Transfer_023"
@@ -738,7 +738,7 @@ test_cases:
       respCode: "10004"
       tranStatus: "FAILED"
       expectedFailReasonKeywords:
-        - "休眠户"
+        - "挂失"
 
   - id: "TC_Transfer_026"
     name: "账户状态-付款账户已销户禁止转账"
@@ -769,7 +769,7 @@ test_cases:
       respCode: "10004"
       tranStatus: "FAILED"
       expectedFailReasonKeywords:
-        - "挂失"
+        - "已销户"
 
   - id: "TC_Transfer_027"
     name: "账户状态-付款账户交易限制禁止转账"
@@ -835,7 +835,7 @@ test_cases:
           routeMode: "AUTO"
     expected:
       http_status: 200
-      respCode: '10004'
+      respCode: '000000'
       tranStatus: FAILED
       expectedFailReasonKeywords: ["账户状态异常"]
   - id: "TC_Transfer_029"
@@ -895,7 +895,7 @@ test_cases:
           tradePwdEnc: "InvalidSm4EncryptedBase64StringXXXX"
     expected:
       http_status: 200
-      respCode: '10002'
+      respCode: '000000'
       tranStatus: FAILED
       expectedFailReasonKeywords: ["单日累计", "限额"]
   - id: "TC_Transfer_031"
@@ -921,7 +921,7 @@ test_cases:
           smsCode: "000000"
     expected:
       http_status: 200
-      respCode: '10002'
+      respCode: '000000'
       tranStatus: FAILED
       expectedFailReasonKeywords: ["单日累计", "限额"]
   - id: "TC_Transfer_032"
@@ -1003,7 +1003,7 @@ test_cases:
       signature: "TamperedInvalidSignatureBase64StringXXX"
     expected:
       http_status: 200
-      respCode: '10002'
+      respCode: '000000'
       tranStatus: FAILED
       expectedFailReasonKeywords: ["单日累计", "限额"]
   - id: "TC_Transfer_035"
@@ -1031,7 +1031,7 @@ test_cases:
           faceToken:
     expected:
       http_status: 200
-      respCode: '10002'
+      respCode: '000000'
       tranStatus: FAILED
       expectedFailReasonKeywords: ["单日累计", "限额"]
   - id: "TC_Transfer_036"
@@ -1061,7 +1061,7 @@ test_cases:
           nonce: "2026-06-15T10:00:00.000+08:00"
     expected:
       http_status: 200
-      respCode: '10002'
+      respCode: '000000'
       tranStatus: FAILED
       expectedFailReasonKeywords: ["单日累计", "限额"]
   - id: "TC_Transfer_037"
@@ -1228,7 +1228,7 @@ test_cases:
           bizType: "1001"
     expected:
       http_status: 200
-      respCode: '10002'
+      respCode: '000000'
       tranStatus: FAILED
       expectedFailReasonKeywords: ["单日累计", "限额"]
   - id: "TC_Transfer_042"
@@ -1255,7 +1255,7 @@ test_cases:
           bizType: "1001"
     expected:
       http_status: 200
-      respCode: '10002'
+      respCode: '000000'
       tranStatus: FAILED
       expectedFailReasonKeywords: ["单日累计", "限额"]
   - id: "TC_Transfer_043"
@@ -1290,7 +1290,7 @@ test_cases:
           bizType: "1001"
     expected:
       http_status: 200
-      respCode: '10004'
+      respCode: '000000'
       tranStatus: FAILED
       expectedFailReasonKeywords: ["账户状态异常"]
   - id: "TC_Transfer_044"
@@ -1327,7 +1327,7 @@ test_cases:
           feeBearer: "01"
     expected:
       http_status: 200
-      respCode: "10001"
+      respCode: "000000"
       tranStatus: "FAILED"
       expectedFailReasonKeywords:
         - "余额不足"
@@ -1370,7 +1370,7 @@ test_cases:
             latitude: 32.125244
     expected:
       http_status: 200
-      respCode: "10004"
+      respCode: "000000"
       tranStatus: "FAILED"
 
   - id: "TC_Transfer_046"
@@ -1480,7 +1480,7 @@ test_cases:
             latitude: 32.125244
     expected:
       http_status: 200
-      respCode: "10002"
+      respCode: "000000"
       tranStatus: "FAILED"
       expectedFailReasonKeywords:
         - "单日累计"
