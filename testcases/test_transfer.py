@@ -423,46 +423,45 @@ def test_transfer(api_session, transfer_url, db_conn, test_context, tc: dict):
                 logger.info(f"[{tc_id}] 跳过余额校验: YAML 配置 skip_balance_check=True")
             else:
                 # 只有不跳过的时候，才执行下面的余额校验逻辑
-            balance_change = expected.get("expectedBalanceChange")
-            with allure.step(
-                f"验证余额: {initial_balance:,.2f} "
-                f"− {payload['body']['transaction']['amount']:,.2f} "
-                f"− {data['body'].get('feeAmount', 0):,.2f}"
-            ):
-                try:
-                    verify_account_balance(
-                        db_conn=db_conn,
-                        acct_no=payer_acct,
-                        initial_balance=initial_balance,
-                        amount=payload["body"]["transaction"]["amount"],
-                        fee=data["body"].get("feeAmount", 0),
-                        tc_id=tc_id,
-                        expected_balance_change=balance_change,
-                    )
-                    # 余额校验通过后，记录转账后余额快照
+                balance_change = expected.get("expectedBalanceChange")
+                with allure.step(
+                    f"验证余额: {initial_balance:,.2f} "
+                    f"− {payload['body']['transaction']['amount']:,.2f} "
+                    f"− {data['body'].get('feeAmount', 0):,.2f}"
+                ):
                     try:
-                        final_balance = get_account_balance(db_conn, payer_acct)
-                        test_context.add_db_snapshot(
-                            "转账后(校验通过)", payer_acct, final_balance
+                        verify_account_balance(
+                            db_conn=db_conn,
+                            acct_no=payer_acct,
+                            initial_balance=initial_balance,
+                            amount=payload["body"]["transaction"]["amount"],
+                            fee=data["body"].get("feeAmount", 0),
+                            tc_id=tc_id,
+                            expected_balance_change=balance_change,
                         )
-                    except Exception:
-                        pass
-                except AssertionError:
-                    # 余额断言失败 → 捕获当前余额快照后再抛出
-                    try:
-                        actual_balance = get_account_balance(db_conn, payer_acct)
-                        test_context.add_db_snapshot(
-                            "转账后(校验失败)", payer_acct, actual_balance
+                        # 余额校验通过后，记录转账后余额快照
+                        try:
+                            final_balance = get_account_balance(db_conn, payer_acct)
+                            test_context.add_db_snapshot(
+                                "转账后(校验通过)", payer_acct, final_balance
+                            )
+                        except Exception:
+                            pass
+                    except AssertionError:
+                        # 余额断言失败 → 捕获当前余额快照后再抛出
+                        try:
+                            actual_balance = get_account_balance(db_conn, payer_acct)
+                            test_context.add_db_snapshot(
+                                "转账后(校验失败)", payer_acct, actual_balance
+                            )
+                        except Exception:
+                            pass
+                        raise
+                    except Exception as e:
+                        # 数据库连接异常等非断言错误 → 记录但不中断
+                        logger.error(
+                            f"[{tc_id}] 余额校验执行异常: {type(e).__name__}: {e}"
                         )
-                    except Exception:
-                        pass
-                    raise
-                except Exception as e:
-                    # 数据库连接异常等非断言错误 → 记录但不中断
-                    logger.error(
-                        f"[{tc_id}] 余额校验执行异常: {type(e).__name__}: {e}"
-                    )
-
     # ---- 7. 失败响应额外校验 ----
     else:
         with allure.step("验证失败响应体完整性"):
