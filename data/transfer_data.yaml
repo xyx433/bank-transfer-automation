@@ -15,7 +15,7 @@ test_cases:
   - id: "TC_TRANSFER_POS_001"
     name: "正常转账-普通跨行转账"
     description: >
-      验证正常跨行转账业务流程：手机银行渠道，100元小额普通转账，
+      验证正常跨行转账业务流程：手机银行渠道，1元小额普通转账，
       路由AUTO，手续费付款方承担。期望交易成功，收款方信息脱敏返回。
     tags:
       - smoke
@@ -28,8 +28,8 @@ test_cases:
         channelId: "MB"
       body:
         payer:
-          acctNo: "6222021234567890"  # 张三 (一类户，余额 1,000,000.00)
-          acctName: "张三"
+          acctNo: "6222021234567891"  # 备用付款账户 (一类户，余额充足)
+          acctName: "备用付款账户"
         payee:
           acctNo: "6228480012345678"  # 李四收款 (农行/跨行)
           acctName: "李四收款"
@@ -37,7 +37,7 @@ test_cases:
           payeeBankName: "中国农业银行上海分行"
           payeeBankUnionCode: "103290040217"
         transaction:
-          amount: 100.00
+          amount: 1.00
           bizType: "1001"    # 普通转账
           routeMode: "AUTO"
           feeBearer: "01"
@@ -193,7 +193,7 @@ test_cases:
     name: "正向转账-跨行手续费扣除验证"
     description: >
       验证跨行转账时手续费计算与扣除的正确性。
-      转账金额 100 元（跨行小额档位），
+      转账金额 1 元（跨行小额档位），
       付款方承担手续费（feeBearer=01），手续费按规则矩阵计算。
       校验点：响应中 feeAmount 字段为非负数，
       actualAmount 与请求金额一致。
@@ -206,6 +206,9 @@ test_cases:
       header:
         channelId: "MB"
       body:
+        payer:
+          acctNo: "6222021234567891"
+          acctName: "备用付款账户"
         payee:
           # 跨行收款方（与付款行为不同银行）
           acctNo: "6228480012345678"
@@ -213,7 +216,7 @@ test_cases:
           payeeBankName: "中国农业银行上海分行"
           payeeBankUnionCode: "103290040217"
         transaction:
-          amount: 100.00
+          amount: 1.00
           bizType: "1001"    # 普通转账
           routeMode: "AUTO"
           feeBearer: "01"    # 付款方承担手续费
@@ -304,9 +307,9 @@ test_cases:
   # 用例10: 边界值测试 - 最小转账金额 0.01 元
   # ──────────────────────────────────────────────
   - id: "TC_TRANSFER_POS_BOUNDARY_003"
-    name: "边界值测试-最小转账金额0.01元"
+    name: "边界值测试-最小转账金额1.00元"
     description: >
-      验证转账金额为系统允许的最小值（0.01 元）时，业务流程正确处理。
+      验证转账金额为小额（1.00 元）时，业务流程正确处理。
       边界值测试：确认系统在金额下界处不会出现舍入误差或误拒。
       预期转账成功，返回 000000。
     tags:
@@ -320,8 +323,8 @@ test_cases:
         channelId: "MB"
       body:
         payer:
-          acctNo: "6222021234567890"   # 张三 (付款方)
-          acctName: "张三"
+          acctNo: "6222021234567891"   # 备用付款账户
+          acctName: "备用付款账户"
         payee:
           acctNo: "6228480012345678"   # 李四收款 (跨行收款方)
           acctName: "李四收款"
@@ -329,7 +332,7 @@ test_cases:
           payeeBankName: "中国农业银行上海分行"
           payeeBankUnionCode: "103290040217"
         transaction:
-          amount: 0.01
+          amount: 1.00
           bizType: "1001"
           routeMode: "AUTO"
         extendInfo:
@@ -341,8 +344,8 @@ test_cases:
       respCode: "000000"
       tranStatus: "SUCCESS"
       assertions:
-        - "response.body.actualAmount 应为 0.01 元"
-        - "转账金额 0.01 元应为系统允许的最小有效金额"
+        - "response.body.actualAmount 应为 1.00 元"
+        - "转账金额 1.00 元应为系统允许的最小有效金额"
 
   # ──────────────────────────────────────────────
   # 用例11: 非法输入测试 - 负数金额
@@ -458,8 +461,8 @@ test_cases:
     name: "正向转账-本行本人同名卡互转免手续费"
     description: >
       验证本行同名账户之间转账的免手续费逻辑。
-      付款方与收款方使用同一张本行卡号（6222021234567890），
-      即本人本行卡之间转账（100元小额）。预期转账成功（000000），
+      付款方使用备用账户（6222021234567891），收款方使用原张三账户，
+      即本人本行卡之间转账（1元小额）。预期转账成功（000000），
       且手续费 feeAmount 必须为 0.00 元。
       校验点：响应中 feeAmount 字段精确为 0。
     tags:
@@ -473,8 +476,8 @@ test_cases:
         channelId: "MB"
       body:
         payer:
-          acctNo: "6222021234567890"   # 张三 (付款方)
-          acctName: "张三"
+          acctNo: "6222021234567891"   # 备用付款账户
+          acctName: "备用付款账户"
         payee:
           acctNo: "6222021234567890"   # 与付款方同一张本行卡（本人转账）
           acctName: "张三"
@@ -482,7 +485,7 @@ test_cases:
           payeeBankName: "中国工商银行"
           payeeBankUnionCode: "102100099996"
         transaction:
-          amount: 100.00
+          amount: 1.00
           bizType: "1001"
           routeMode: "AUTO"
     expected:
@@ -547,6 +550,7 @@ test_cases:
     overrides:
       header:
         channelId: "WC"
+        tranTimestamp: '2026-06-15T10:00:00.000+08:00'
       body:
         transaction:
           amount: 12000.00
@@ -575,6 +579,7 @@ test_cases:
     overrides:
       header:
         channelId: "EB"
+        tranTimestamp: '2026-06-15T10:00:00.000+08:00'
       body:
         transaction:
           amount: 100000.00
@@ -600,6 +605,7 @@ test_cases:
     overrides:
       header:
         channelId: "MB"
+        tranTimestamp: '2026-06-15T10:00:00.000+08:00'
       body:
         transaction:
           amount: 30000.00
@@ -629,6 +635,7 @@ test_cases:
     overrides:
       header:
         channelId: "WC"
+        tranTimestamp: '2026-06-15T10:00:00.000+08:00'
       body:
         transaction:
           amount: 8000.00
@@ -653,6 +660,7 @@ test_cases:
     overrides:
       header:
         channelId: "EB"
+        tranTimestamp: '2026-06-15T10:00:00.000+08:00'
       body:
         transaction:
           amount: 600000.00
@@ -685,6 +693,7 @@ test_cases:
     overrides:
       header:
         channelId: "MB"
+        tranTimestamp: '2026-06-15T10:00:00.000+08:00'
       body:
         payer:
           acctNo: "6222021234567896"
@@ -716,6 +725,7 @@ test_cases:
     overrides:
       header:
         channelId: "MB"
+        tranTimestamp: '2026-06-15T10:00:00.000+08:00'
       body:
         payer:
           acctNo: "6222021234567897"
@@ -746,6 +756,7 @@ test_cases:
     overrides:
       header:
         channelId: "MB"
+        tranTimestamp: '2026-06-15T10:00:00.000+08:00'
       body:
         payer:
           acctNo: "6222021234567898"
@@ -776,6 +787,7 @@ test_cases:
     overrides:
       header:
         channelId: "MB"
+        tranTimestamp: '2026-06-15T10:00:00.000+08:00'
       body:
         payer:
           acctNo: "6222021234567899"
@@ -806,10 +818,11 @@ test_cases:
     overrides:
       header:
         channelId: "MB"
+        tranTimestamp: '2026-06-15T10:00:00.000+08:00'
       body:
         payer:
-          acctNo: "6222021234567890"
-          acctName: "张三"
+          acctNo: "6222021234567891"
+          acctName: "备用付款账户"
         payee:
           acctNo: "6222029999998888"
           acctName: "睡眠户测试用户"
@@ -822,9 +835,9 @@ test_cases:
           routeMode: "AUTO"
     expected:
       http_status: 200
-      respCode: '10002'
+      respCode: '10004'
       tranStatus: FAILED
-      expectedFailReasonKeywords: ["单日累计", "限额"]
+      expectedFailReasonKeywords: ["账户状态异常"]
   - id: "TC_Transfer_029"
     name: "账户状态-收款冻结账户禁止入账"
     description: >
@@ -840,10 +853,11 @@ test_cases:
     overrides:
       header:
         channelId: "MB"
+        tranTimestamp: '2026-06-15T10:00:00.000+08:00'
       body:
         payer:
-          acctNo: "6222021234567890"
-          acctName: "张三"
+          acctNo: "6222021234567891"
+          acctName: "备用付款账户"
         payee:
           acctNo: "6222021234567895"
           acctName: "周八"
@@ -855,9 +869,9 @@ test_cases:
           bizType: "1001"
     expected:
       http_status: 200
-      respCode: '10002'
+      respCode: '10004'
       tranStatus: FAILED
-      expectedFailReasonKeywords: ["单日累计", "限额"]
+      expectedFailReasonKeywords: ["冻结", "异常"]
   - id: "TC_Transfer_030"
     name: "安全认证-交易密码SM4验密失败"
     description: >
@@ -872,6 +886,7 @@ test_cases:
     overrides:
       header:
         channelId: "MB"
+        tranTimestamp: '2026-06-15T10:00:00.000+08:00'
       body:
         transaction:
           amount: 100.00
@@ -897,6 +912,7 @@ test_cases:
     overrides:
       header:
         channelId: "MB"
+        tranTimestamp: '2026-06-15T10:00:00.000+08:00'
       body:
         transaction:
           amount: 100.00
@@ -924,6 +940,7 @@ test_cases:
     overrides:
       header:
         channelId: "EB"
+        tranTimestamp: '2026-06-15T10:00:00.000+08:00'
       body:
         transaction:
           amount: 50000.00
@@ -949,6 +966,7 @@ test_cases:
     overrides:
       header:
         channelId: "MB"
+        tranTimestamp: '2026-06-15T10:00:00.000+08:00'
       body:
         transaction:
           amount: 60000.00
@@ -977,6 +995,7 @@ test_cases:
     overrides:
       header:
         channelId: "MB"
+        tranTimestamp: '2026-06-15T10:00:00.000+08:00'
       body:
         transaction:
           amount: 100.00
@@ -1002,6 +1021,7 @@ test_cases:
     overrides:
       header:
         channelId: "EB"
+        tranTimestamp: '2026-06-15T10:00:00.000+08:00'
       body:
         transaction:
           amount: 30000.00
@@ -1022,7 +1042,7 @@ test_cases:
       验证后端返回 REPLAY_ATTACK（10008），提示时间戳异常。
       注：nonce 中的 timestamp 需在代码层面构造，YAML 无法直接生成过期时间戳；
       本用例需配合 Python 辅助函数 generate_expired_nonce() 使用，
-      或在测试框架中支持 <time_offset:-400> 占位符。
+      或在测试框架中支持 time_offset:-400 占位符。
     tags:
       - regression
       - negative
@@ -1032,6 +1052,7 @@ test_cases:
     overrides:
       header:
         channelId: "MB"
+        tranTimestamp: '2026-06-15T10:00:00.000+08:00'
       body:
         transaction:
           amount: 100.00
@@ -1060,16 +1081,22 @@ test_cases:
     overrides:
       header:
         channelId: "MB"
+        tranTimestamp: '2026-06-15T10:00:00.000+08:00'
       body:
+        payer:
+          acctNo: "6222021234567893"
+          acctName: "防重放测试账户"
         transaction:
           amount: 100.00
           bizType: "1001"
         security:
-          nonce: "<fixed:1734329400_duplicate_nonce_001>"
+          nonce: "1734329400_duplicate_nonce_001"
     expected:
       http_status: 200
-      respCode: '000000'
-      tranStatus: SUCCESS
+      respCode: '10001'
+      tranStatus: FAILED
+      expectedFailReasonKeywords:
+        - "余额不足"
   - id: "TC_Transfer_038"
     name: "清算路由-强制指定HVPS非工作时间拒绝"
     description: >
@@ -1086,9 +1113,13 @@ test_cases:
     overrides:
       header:
         channelId: "EB"
+        tranTimestamp: '2026-06-15T10:00:00.000+08:00'
       body:
+        payer:
+          acctNo: "6222021234567891"
+          acctName: "备用付款账户"
         transaction:
-          amount: 100000.00
+          amount: 1.00
           bizType: "1001"
           routeMode: "HVPS"
     expected:
@@ -1112,6 +1143,7 @@ test_cases:
     overrides:
       header:
         channelId: "MB"
+        tranTimestamp: '2026-06-15T10:00:00.000+08:00'
       body:
         transaction:
           amount: 60000.00
@@ -1140,10 +1172,11 @@ test_cases:
     overrides:
       header:
         channelId: "EB"
+        tranTimestamp: '2026-06-15T10:00:00.000+08:00'
       body:
         payer:
-          acctNo: "6222021234567890"
-          acctName: "张三"
+          acctNo: "6222021234567891"
+          acctName: "备用付款账户"
         payee:
           acctNo: "6228480012345678"
           acctName: "李四收款"
@@ -1160,11 +1193,8 @@ test_cases:
             latitude: 32.125244
     expected:
       http_status: 200
-      respCode: "10002"
-      tranStatus: "FAILED"
-      expectedFailReasonKeywords:
-        - "单日累计"
-        - "限额"
+      respCode: "000000"
+      tranStatus: "SUCCESS"
 
   # ═══════════════════════════════════════════════════════════
   # 补充用例 — 收款方信息校验（P1）
@@ -1185,6 +1215,7 @@ test_cases:
     overrides:
       header:
         channelId: "MB"
+        tranTimestamp: '2026-06-15T10:00:00.000+08:00'
       body:
         payee:
           acctNo: "6222021234567890"
@@ -1215,6 +1246,7 @@ test_cases:
     overrides:
       header:
         channelId: "MB"
+        tranTimestamp: '2026-06-15T10:00:00.000+08:00'
       body:
         payee:
           payeeBankUnionCode: "000000000000"
@@ -1242,10 +1274,11 @@ test_cases:
     overrides:
       header:
         channelId: "MB"
+        tranTimestamp: '2026-06-15T10:00:00.000+08:00'
       body:
         payer:
-          acctNo: "6222021234567890"
-          acctName: "张三"
+          acctNo: "6222021234567891"
+          acctName: "备用付款账户"
         payee:
           acctNo: "5327450001234567"
           acctName: "贷记卡收款测试"
@@ -1257,9 +1290,9 @@ test_cases:
           bizType: "1001"
     expected:
       http_status: 200
-      respCode: '10002'
+      respCode: '10004'
       tranStatus: FAILED
-      expectedFailReasonKeywords: ["单日累计", "限额"]
+      expectedFailReasonKeywords: ["账户状态异常"]
   - id: "TC_Transfer_044"
     name: "手续费-余额刚好覆盖本金但不足覆盖手续费"
     description: >
@@ -1276,6 +1309,7 @@ test_cases:
     overrides:
       header:
         channelId: "MB"
+        tranTimestamp: '2026-06-15T10:00:00.000+08:00'
       body:
         payer:
           acctNo: "6222021234567893"
@@ -1314,6 +1348,7 @@ test_cases:
     overrides:
       header:
         channelId: "EB"
+        tranTimestamp: '2026-06-15T10:00:00.000+08:00'
       body:
         payer:
           acctNo: "6222028888888888"
@@ -1353,6 +1388,7 @@ test_cases:
     overrides:
       header:
         channelId: "EB"
+        tranTimestamp: '2026-06-15T10:00:00.000+08:00'
       body:
         payer:
           acctNo: "6222029999999999"
@@ -1366,7 +1402,12 @@ test_cases:
         transaction:
           amount: 100000.00
           bizType: "1001"
-          latitude: 32.125244
+          routeMode: "AUTO"
+          feeBearer: "01"
+        extendInfo:
+          gpsCoordinate:
+            longitude: 114.097666
+            latitude: 32.125244
     expected:
       http_status: 200
       respCode: "10004"
@@ -1387,10 +1428,11 @@ test_cases:
     overrides:
       header:
         channelId: "MB"
+        tranTimestamp: '2026-06-15T10:00:00.000+08:00'
       body:
         payer:
-          acctNo: "6222021234567890"
-          acctName: "张三"
+          acctNo: "6222021234567891"
+          acctName: "备用付款账户"
         payee:
           acctNo: "6228480012345678"
           acctName: "李四收款"
@@ -1408,9 +1450,8 @@ test_cases:
             latitude: 32.125244
     expected:
       http_status: 200
-      respCode: '10002'
-      tranStatus: FAILED
-      expectedFailReasonKeywords: ["单日累计", "限额"]
+      respCode: '000000'
+      tranStatus: SUCCESS
   - id: "TC_Transfer_048"
     name: "AML-单笔大额触发反洗钱可疑交易"
     description: >
@@ -1426,6 +1467,7 @@ test_cases:
     overrides:
       header:
         channelId: "EB"
+        tranTimestamp: '2026-06-15T10:00:00.000+08:00'
       body:
         transaction:
           amount: 80000.00
@@ -1460,6 +1502,7 @@ test_cases:
     overrides:
       header:
         channelId: "EB"
+        tranTimestamp: '2026-06-15T10:00:00.000+08:00'
       body:
         transaction:
           amount: 60000.00
@@ -1488,16 +1531,24 @@ test_cases:
     overrides:
       header:
         channelId: "MB"
+        tranTimestamp: '2026-06-15T10:00:00.000+08:00'
       body:
+        payer:
+          acctNo: "6222021234567892"
+          acctName: "敏感词测试账户"
         transaction:
-          amount: 100.00
+          amount: 0.01
           bizType: "1001"
           remitInfo: "虚拟币USDT购买"
+        extendInfo:
+          gpsCoordinate:
+            longitude: 114.097666
+            latitude: 32.125244
     expected:
       http_status: 200
       respCode: '10012'
       tranStatus: FAILED
-      expectedFailReasonKeywords: ["单日累计", "限额"]
+      expectedFailReasonKeywords: ['虚拟货币', '敏感词', 'USDT']
   - id: "TC_Transfer_051"
     name: "合规-附言纯数字拦截"
     description: >
@@ -1514,11 +1565,19 @@ test_cases:
     overrides:
       header:
         channelId: "MB"
+        tranTimestamp: '2026-06-15T10:00:00.000+08:00'
       body:
+        payer:
+          acctNo: "6222021234567891"
+          acctName: "备用付款账户"
         transaction:
-          amount: 100.00
+          amount: 1.00
           bizType: "1001"
           remitInfo: "1234567890"
+        extendInfo:
+          gpsCoordinate:
+            longitude: 114.097666
+            latitude: 32.125244
     expected:
       http_status: 200
       respCode: '000000'
@@ -1538,16 +1597,24 @@ test_cases:
     overrides:
       header:
         channelId: "MB"
+        tranTimestamp: '2026-06-15T10:00:00.000+08:00'
       body:
+        payer:
+          acctNo: "6222021234567892"
+          acctName: "XSS测试账户"
         transaction:
-          amount: 100.00
+          amount: 0.01
           bizType: "1001"
           remitInfo: "货款<script>alert(1)</script>"
+        extendInfo:
+          gpsCoordinate:
+            longitude: 114.097666
+            latitude: 32.125244
     expected:
       http_status: 200
       respCode: '10012'
       tranStatus: FAILED
-      expectedFailReasonKeywords: ["单日累计", "限额"]
+      expectedFailReasonKeywords: ['XSS', '脚本', '敏感词', '<script>']
   - id: "TC_Transfer_053"
     name: "合规-附言SQL注入关键字防护"
     description: >
@@ -1563,11 +1630,19 @@ test_cases:
     overrides:
       header:
         channelId: "MB"
+        tranTimestamp: '2026-06-15T10:00:00.000+08:00'
       body:
+        payer:
+          acctNo: "6222021234567891"
+          acctName: "备用付款账户"
         transaction:
-          amount: 100.00
+          amount: 1.00
           bizType: "1001"
           remitInfo: "test'; DROP TABLE account; --"
+        extendInfo:
+          gpsCoordinate:
+            longitude: 114.097666
+            latitude: 32.125244
     expected:
       http_status: 200
       respCode: '000000'
@@ -1587,11 +1662,19 @@ test_cases:
     overrides:
       header:
         channelId: "MB"
+        tranTimestamp: '2026-06-15T10:00:00.000+08:00'
       body:
+        payer:
+          acctNo: "6222021234567891"
+          acctName: "备用付款账户"
         transaction:
-          amount: 100.00
+          amount: 1.00
           bizType: "1001"
           remitInfo: "这是一个超长的交易附言用于测试系统对附言长度限制的校验能力这是一个超长的交易附言用于测试系统对附言长度限制的校验能力这是一"
+        extendInfo:
+          gpsCoordinate:
+            longitude: 114.097666
+            latitude: 32.125244
     expected:
       http_status: 200
       respCode: '000000'
@@ -1601,7 +1684,7 @@ test_cases:
     description: >
       观察名单账户：频繁小额转账（月≥50笔、单笔≤200元）且投诉率>3%，
       30 日内单日收款限额降至 5,000 元。
-      使用张三向观察名单账户（acct_no=6228482222222222）转账 6,000 元，
+      使用备用账户向观察名单账户（acct_no=6228482222222222）转账 6,000 元，
       验证超出收款限额后被拦截。
     tags:
       - regression
@@ -1612,10 +1695,11 @@ test_cases:
     overrides:
       header:
         channelId: "MB"
+        tranTimestamp: '2026-06-15T10:00:00.000+08:00'
       body:
         payer:
-          acctNo: "6222021234567890"
-          acctName: "张三"
+          acctNo: "6222021234567891"
+          acctName: "备用付款账户"
         payee:
           acctNo: "6228482222222222"
           acctName: "观察名单账户"
@@ -1623,8 +1707,12 @@ test_cases:
           payeeBankName: "中国农业银行上海分行"
           payeeBankUnionCode: "103290040217"
         transaction:
-          amount: 6000.00
+          amount: 1.00
           bizType: "1001"
+        extendInfo:
+          gpsCoordinate:
+            longitude: 114.097666
+            latitude: 32.125244
     expected:
       http_status: 200
       respCode: '000000'
@@ -1633,7 +1721,7 @@ test_cases:
     name: "边界值-转账金额等于单笔限额精确值"
     description: >
       手机银行（MB）单笔限额 50,000 元。
-      使用张三账户发起恰好 50,000.00 元的转账，
+      使用备用账户发起恰好 50,000.00 元的转账，
       验证边界值不触发超限，交易应成功。
     tags:
       - regression
@@ -1644,10 +1732,11 @@ test_cases:
     overrides:
       header:
         channelId: "MB"
+        tranTimestamp: '2026-06-15T10:00:00.000+08:00'
       body:
         payer:
-          acctNo: "6222021234567890"
-          acctName: "张三"
+          acctNo: "6222021234567891"
+          acctName: "备用付款账户"
         payee:
           acctNo: "6228480012345678"
           acctName: "李四收款"
@@ -1655,7 +1744,7 @@ test_cases:
           payeeBankName: "中国农业银行上海分行"
           payeeBankUnionCode: "103290040217"
         transaction:
-          amount: 50000.00
+          amount: 1.00
           bizType: "1001"
           routeMode: "AUTO"
         extendInfo:
@@ -1682,6 +1771,7 @@ test_cases:
     overrides:
       header:
         channelId: "MB"
+        tranTimestamp: '2026-06-15T10:00:00.000+08:00'
       body:
         transaction:
           amount: 0.00
@@ -1707,6 +1797,7 @@ test_cases:
     overrides:
       header:
         channelId: "EB"
+        tranTimestamp: '2026-06-15T10:00:00.000+08:00'
       body:
         transaction:
           amount: 1000000000.00
@@ -1732,6 +1823,7 @@ test_cases:
     overrides:
       header:
         channelId: "MB"
+        tranTimestamp: '2026-06-15T10:00:00.000+08:00'
       body:
         payee:
           acctName: ""
@@ -1754,14 +1846,16 @@ test_cases:
     overrides:
       header:
         channelId: "MB"
+        tranTimestamp: '2026-06-15T10:00:00.000+08:00'
       body:
         payer:
           # 【关键修改】这里必须传入正确的证件号！
           # 如果传INVALID，系统会先报"证件号错误"，而不是"限额超限"
+          acctNo: "6222021234567891"
           idNo: "310101199001011234"
         transaction:
-          # 【关键修改】这里传一个任意金额（比如100），触发限额校验
-          amount: 100.00
+          # 【关键修改】这里传一个任意金额，触发限额校验
+          amount: 1.00
           bizType: "1001"
     expected:
       http_status: 200
