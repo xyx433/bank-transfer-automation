@@ -75,7 +75,7 @@ jobs:
     # 7. 安装依赖
     - name: Install Python Dependencies
       run: |
-        pip install pymysql requests pytest allure-pytest
+        pip install pymysql requests pytest allure-pytest PyYAML
 
     # 8. 【关键】初始化数据库
     # 此时 Java 已经启动，表结构已经由 Java (JPA/Hibernate) 创建好了
