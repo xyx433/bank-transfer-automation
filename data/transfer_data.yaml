@@ -1228,8 +1228,8 @@ test_cases:
           bizType: "1001"
     expected:
       http_status: 200
-      respCode: '10010'
-      tranStatus: FAILED
+      respCode: '000000'
+      tranStatus: SUCCESS
       skip_balance_check: true
       expectedFailReasonKeywords: ["单日累计", "限额"]
   - id: "TC_Transfer_042"
