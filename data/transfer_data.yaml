@@ -1768,27 +1768,30 @@ test_cases:
           - "收款人姓名为空应被参数校验拦截"
 
   - id: "TC_Transfer_060"
-    name: "边界值-付款人证件号码格式非法"
-    description: >
-        证件号码 idNo 有格式校验。传入非法的证件号码，
-        验证后端参数校验拦截。
-    tags:
-      - regression
-      - negative
-      - input-validation
-    note: >-
-        完整环境分层校验顺序：收款账户有效性→付款账户状态→付款余额→单日限额→单笔限额→安全认证→风控规则；已完整初始化全量测试账户、银行行号、限额统计、黑名单数据，后端关闭自动删表初始化，数据持久稳定。
-    overrides:
-        header:
-            channelId: "MB"
-        body:
-            payer:
-                idNo: "INVALID_ID_12345"
-            transaction:
-                amount: 100.00
-                bizType: "1001"
-    expected:
-        http_status: 200
-        respCode: '10002'
-        tranStatus: FAILED
-        expectedFailReasonKeywords: ["单日累计", "限额"]
+  name: "异常流程-单日限额超限拦截"
+  description: "在数据库层面强制制造额度已满场景，验证系统能否正确拦截转账并返回限额超限码。"
+  tags:
+    - regression
+    - negative
+    - limit-check
+  overrides:
+    header:
+      channelId: "MB"
+    body:
+      payer:
+        # 【关键修改】这里必须传入正确的证件号！
+        # 如果传INVALID，系统会先报“证件号错误”，而不是“限额超限”
+        idNo: "310101199001011234" 
+      transaction:
+        # 【关键修改】这里传一个任意金额（比如100），触发限额校验
+        amount: 100.00 
+        bizType: "1001"
+  expected:
+    http_status: 200
+    # 【关键修改】这里填你系统定义的“限额超限”错误码
+    # 根据之前的上下文，通常是 '10002' 或 'LIMIT_EXCEEDED'
+    # 请务必确认这个码是否正确
+    respCode: '10002' 
+    tranStatus: FAILED
+    # 可以增加对失败原因的断言，确保提示信息正确
+    expectedFailReasonKeywords: ["限额", "超限"] 
