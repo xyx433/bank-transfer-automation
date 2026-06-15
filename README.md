@@ -20,7 +20,8 @@
 . 安装依赖: `pip install -r requirements.txt`
 . 运行测试: `pytest`
 ### 📈 测试报告示例
-以下是最近一次构建生成的 Allure 可视化报告，展示了 18 个核心用例全部通过：<img width="1882" height="862" alt="屏幕截图 2026-06-14 091600" src="https://github.com/user-attachments/assets/3ff71c57-1da7-4659-894e-9fe771e4bd45" />
+以下是最近一次构建生成的 Allure 可视化报告，展示了 57 个核心用例全部通过：<img width="1896" height="870" alt="image" src="https://github.com/user-attachments/assets/eda6ec20-1226-4ace-a83b-d675363220e3" />
+
 
 
 🏦 银行转账系统 - 高并发性能压测报告
