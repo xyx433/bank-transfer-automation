@@ -39,18 +39,22 @@
    ```bash
    git clone https://github.com/your-repo-url.git
    cd bank-transfer-automation
-
+   
 2. 安装依赖: `pip install -r requirements.txt`
 3. 配置环境:修改 config.yaml 中的数据库连接与 API 地址。
+   
 4.运行测试:pytest --alluredir=./results/allure-results
 allure serve ./results/allure-results
+
 📊 测试结果概览
 在最近一次完整的回归测试中，57 个核心用例全部通过 (100% Pass)。报告展示了详细的步骤日志、数据库断言快照及请求响应详情。<img width="1896" height="870" alt="image" src="https://github.com/user-attachments/assets/eda6ec20-1226-4ace-a83b-d675363220e3" />
 
 
 
 🔥 高并发性能压测报告
+
 针对核心转账接口进行了高强度的 JMeter 压力测试，旨在验证系统在万级并发下的吞吐能力与资金安全性。
+
 1. 核心性能指标
 在持续 30 秒的高压测试中，系统表现极其稳定：
 | 指标 | 数值 | 说明 |
