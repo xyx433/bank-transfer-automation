@@ -41,6 +41,7 @@
    cd bank-transfer-automation 
 2. 安装依赖: `pip install -r requirements.txt`
 3. 配置环境:修改 config.yaml 中的数据库连接与 API 地址。
+ 
 4.运行测试:pytest --alluredir=./results/allure-results
 allure serve ./results/allure-results
 
@@ -76,6 +77,7 @@ allure serve ./results/allure-results
 图表解读：观察 TPS 曲线，系统并未因大量失败请求而崩溃或资源耗尽。
 稳定性：黄色点（成功）与红色点（被拦截）交替出现，说明系统负载控制极佳，未发生“雪崩”。
 <img width="1647" height="782" alt="image" src="https://github.com/user-attachments/assets/e9d3b494-c2e5-4e7b-9dc9-02d7bd4d75f0" />
+
 ⚡ 4. 响应时间分布
 系统在处理高并发请求时，展现出了毫秒级的响应速度。绝大多数请求（Median, 90th, 95th percentile）都紧贴着 0ms 基准线。即便是最大值（Max），也仅略高于 200ms，证明了数据库索引优化得当，且没有发生严重的锁等待阻塞。
 <img width="1642" height="862" alt="image" src="https://github.com/user-attachments/assets/9d97a1ad-77bb-4afd-b235-4eb61b5ca6de" />
