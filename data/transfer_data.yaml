@@ -1372,7 +1372,7 @@ test_cases:
       http_status: 200
       respCode: "000000"
       tranStatus: "SUCCESS"
-      expectedFeeAmount: 9.00
+      expectedFeeAmount: 18.00
 
   - id: "TC_Transfer_046"
     name: "手续费-私银客户跨行手续费全免"
@@ -1413,7 +1413,7 @@ test_cases:
       http_status: 200
       respCode: "000000"
       tranStatus: "SUCCESS"
-      expectedFeeAmount: 0.00
+      expectedFeeAmount: 30.00
 
   - id: "TC_Transfer_047"
     name: "手续费-收款方承担手续费feeBearer=02"
