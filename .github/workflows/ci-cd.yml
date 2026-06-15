@@ -85,10 +85,10 @@ jobs:
         sleep 10
         
         # 显式指定主机和端口
-        mysql -h 127.0.0.1 -P 3306 -u root -prootpass123 bank_test_db < sql/reset_test_accounts.sql
+        mysql -h 127.0.0.1 -P 3306 -u root -p${{ secrets.DB_PASSWORD }} ${{ secrets.DB_NAME }} < sql/reset_test_accounts.sql
         
         # 打印表结构用于调试
-        mysql -h 127.0.0.1 -P 3306 -u root -prootpass123 bank_test_db -e "SHOW TABLES;"
+        mysql -h 127.0.0.1 -P 3306 -u root -p${{ secrets.DB_PASSWORD }} ${{ secrets.DB_NAME }} -e "SHOW TABLES;"
 
     # 9. 运行测试
     # 设置环境变量，告诉 Python 测试脚本连哪里
@@ -97,8 +97,8 @@ jobs:
         DB_HOST: 127.0.0.1
         DB_PORT: 3306
         DB_USER: root
-        DB_PASSWORD: rootpass123
-        DB_NAME: bank_test_db
+        DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        DB_NAME: ${{ secrets.DB_NAME }}
       run: pytest testcases/ -v --alluredir=allure-results
 
     # 10. 报告与清理
