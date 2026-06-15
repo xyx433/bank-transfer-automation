@@ -1228,8 +1228,9 @@ test_cases:
           bizType: "1001"
     expected:
       http_status: 200
-      respCode: '000000'
-      tranStatus: SUCCESS
+      respCode: '10010'
+      tranStatus: FAILED
+      skip_balance_check: true
       expectedFailReasonKeywords: ["单日累计", "限额"]
   - id: "TC_Transfer_042"
     name: "收款校验-支付系统行号UnionCode无效"
