@@ -47,8 +47,9 @@ jobs:
         docker run -d \
           --name my-bank-app \
           --network host \
-          -e "SECURITY_ENABLED=true" \
-          -e "VALIDATE_BUSINESS_RULES=true" \
+          -e "VALIDATION_ENABLED=true" \
+          -e "RISK_CONTROL_ENABLED=true" \
+          -e "SECURITY_BYPASS_TOKEN=DEBUG_MODE" \
           -e "SPRING_DATASOURCE_URL=jdbc:mysql://127.0.0.1:3306/${{ secrets.DB_NAME }}?useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=UTF-8&allowPublicKeyRetrieval=true" \
           -e "SPRING_DATASOURCE_USERNAME=root" \
           -e "SPRING_DATASOURCE_PASSWORD=${{ secrets.DB_PASSWORD }}" \
