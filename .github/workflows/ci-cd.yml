@@ -21,9 +21,11 @@ jobs:
           --health-retries=5
 
     steps:
+      # 1. 检出 Python 测试代码
       - name: Checkout Python Test Code
         uses: actions/checkout@v3
 
+      # 2. 检出 Java 后端代码 (使用 token 访问私有仓库)
       - name: Checkout Java Backend Code
         uses: actions/checkout@v3
         with:
@@ -31,11 +33,10 @@ jobs:
           path: java-backend
           token: ${{ secrets.JAVA_REPO_TOKEN }}
 
-      # 构建并运行 Java 后端 Docker 容器
+      # 3. 构建并运行 Java 后端 Docker 容器
       - name: Build and Run Backend
         run: |
           docker build -t bank-backend ./java-backend
-          sh -c '
           docker run -d \
             --name my-bank-app \
             --network host \
@@ -43,43 +44,49 @@ jobs:
             -e "SPRING_DATASOURCE_USERNAME=root" \
             -e "SPRING_DATASOURCE_PASSWORD=${{ secrets.DB_PASSWORD }}" \
             bank-backend
-          '
 
+      # 4. 等待后端完全启动 (包含健康检查)
       - name: Wait for Backend to Start
         run: |
           echo "Waiting for server on port 8080..."
           sudo apt-get update && sudo apt-get install -y netcat-openbsd || true
-          
-          for i in $(seq 1 24); do
+
+          for i in $(seq 1 30); do
             if nc -z localhost 8080; then
               echo "Server is UP!"
               exit 0
             fi
-            echo "Waiting... attempt $i/24 (sleeping 5s)"
+            echo "Waiting... attempt $i/30 (sleeping 5s)"
             sleep 5
           done
-          echo "Server failed to start within 120s"
+          echo "Server failed to start within 150s"
           docker logs my-bank-app
           exit 1
 
+      # 5. 设置 Python 环境
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
 
+      # 6. 安装依赖
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
           pip install pymysql requests pytest allure-pytest
 
+      # 7. 【关键修改】初始化测试数据库 (必须在 Java 启动之后执行)
       - name: Initialize Test Database
         run: |
-          mysql -h127.0.0.1 -uroot -p${{ secrets.DB_PASSWORD }} ${{ secrets.DB_NAME }} < sql/reset_test_accounts.sql
+          echo "Importing test data after backend startup..."
+          # 使用 127.0.0.1 强制 TCP 连接，避免 socket 路径问题
+          mysql -h 127.0.0.1 -P 3306 -uroot -p${{ secrets.DB_PASSWORD }} ${{ secrets.DB_NAME }} < sql/reset_test_accounts.sql
 
+      # 8. 运行测试
       - name: Run Tests with Allure
         run: pytest testcases/ -v --alluredir=allure-results
 
-      # 【关键修改】这里将 v3 改为了 v4
+      # 9. 上传 Allure 报告
       - name: Upload Allure Report
         if: always()
         uses: actions/upload-artifact@v4
@@ -87,6 +94,7 @@ jobs:
           name: allure-report
           path: allure-results/
 
+      # 10. 清理资源
       - name: Cleanup
         if: always()
         run: |
