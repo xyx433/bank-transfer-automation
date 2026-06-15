@@ -41,8 +41,8 @@
    cd bank-transfer-automation 
 2. 安装依赖: `pip install -r requirements.txt`
 3. 配置环境:修改 config.yaml 中的数据库连接与 API 地址。
- 
-4.运行测试:pytest --alluredir=./results/allure-results
+
+ 4.运行测试:pytest --alluredir=./results/allure-results
 allure serve ./results/allure-results
 
 📊 测试结果概览
